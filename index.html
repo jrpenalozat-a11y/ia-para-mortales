@@ -1,0 +1,1837 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IA para Mortales — Academia anti-jerga</title>
+<meta name="description" content="La academia buena onda para entender la inteligencia artificial y la programación. Sin jerga, sin humo, sin llorar.">
+<meta name="theme-color" content="#070b18">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   IA PARA MORTALES — tokens de diseño
+   :root = modo claro · body.dark = modo noche (arranca oscuro)
+   ============================================================ */
+:root{
+  --bg:#eef3ff; --bg2:#ffffff; --card:#ffffff;
+  --ink:#0e1430; --muted:#5b6488; --line:#dfe6fb;
+  --p1:#00c2ff; --p2:#7c5cff; --p3:#ff4d8d;
+  --good:#13b981; --warn:#f5a524; --bad:#f43f5e;
+  --grad:linear-gradient(135deg,#00c2ff,#7c5cff 50%,#ff4d8d);
+  --shadow:0 10px 30px rgba(20,30,80,.10);
+  --shadow2:0 4px 14px rgba(20,30,80,.08);
+}
+body.dark{
+  --bg:#070b18; --bg2:#0c1224; --card:#101831;
+  --ink:#edf1ff; --muted:#8e9cc4; --line:#1d2949;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  --shadow2:0 4px 14px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  min-height:100vh;transition:background .3s,color .3s;
+  background-image:radial-gradient(1200px 500px at 80% -10%, rgba(124,92,255,.12), transparent 60%),
+                   radial-gradient(900px 420px at -10% 30%, rgba(0,194,255,.10), transparent 60%);
+  background-attachment:fixed;
+}
+h1,h2,h3,h4{font-family:'Sora',sans-serif}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:active{transform:scale(.97)}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 60px}
+
+/* ---------- encabezado ---------- */
+.top{
+  position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{
+  width:42px;height:42px;border-radius:13px;background:var(--grad);display:grid;place-items:center;
+  font-size:22px;box-shadow:var(--shadow2);flex:none;animation:pop .5s ease;
+}
+.brand h1{
+  font-size:1.05rem;line-height:1.1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.brand p{font-size:.68rem;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.actions{display:flex;gap:8px}
+.icbtn{
+  width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--line);
+  font-size:18px;display:grid;place-items:center;box-shadow:var(--shadow2);transition:transform .15s;
+}
+.icbtn:hover{transform:translateY(-2px)}
+
+/* ---------- banner motivacional ---------- */
+.motiv{
+  display:block;width:100%;text-align:left;margin:14px 0 4px;padding:12px 16px;border-radius:16px;
+  background:var(--card);border:1px solid var(--line);border-left:4px solid transparent;
+  border-image:var(--grad) 1;border-left-width:4px;border-image-slice:1;
+  font-size:.88rem;color:var(--muted);font-style:italic;box-shadow:var(--shadow2);
+  transition:opacity .3s;
+}
+.motiv.out{opacity:0}
+
+/* ---------- pestañas de navegación ---------- */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 18px}
+.tabs button{
+  padding:10px 4px;border-radius:14px;background:var(--card);border:1px solid var(--line);
+  font-size:.78rem;font-weight:600;color:var(--muted);box-shadow:var(--shadow2);transition:all .2s;
+}
+.tabs button.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(124,92,255,.35)}
+
+/* ---------- vistas / animación de entrada ---------- */
+.view{animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* ---------- portada: estadísticas + grilla de categorías ---------- */
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{
+  display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;
+  background:var(--card);border:1px solid var(--line);font-size:.8rem;font-weight:600;box-shadow:var(--shadow2);
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.catcard{
+  position:relative;text-align:left;padding:16px 14px 14px;border-radius:20px;background:var(--card);
+  border:1px solid var(--line);box-shadow:var(--shadow2);transition:transform .18s,box-shadow .18s;overflow:hidden;
+}
+.catcard:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.catcard::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--cc,var(--p1))}
+.catcard .em{
+  width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;margin-bottom:10px;
+  background:color-mix(in srgb,var(--cc,var(--p1)) 16%,transparent);
+}
+.catcard h3{font-size:.92rem;line-height:1.25;margin-bottom:3px}
+.catcard .n{font-size:.72rem;color:var(--muted);margin-bottom:9px}
+.mini{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.mini>i{display:block;height:100%;border-radius:99px;background:var(--cc,var(--p1));transition:width .4s}
+.catcard .done{position:absolute;top:10px;right:10px;font-size:16px;animation:pop .4s ease}
+
+/* ---------- detalle de categoría ---------- */
+.back{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;margin-bottom:12px;
+  background:var(--card);border:1px solid var(--line);font-size:.82rem;font-weight:600;box-shadow:var(--shadow2);
+}
+.cathead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.cathead .em{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex:none;
+  background:color-mix(in srgb,var(--cc,var(--p1)) 18%,transparent)}
+.cathead h2{font-size:1.25rem}
+.cathead p{font-size:.8rem;color:var(--muted)}
+.subtabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.subtabs button{
+  padding:10px;border-radius:13px;background:var(--card);border:1px solid var(--line);
+  font-weight:600;font-size:.85rem;color:var(--muted);
+}
+.subtabs button.on{background:var(--cc,var(--p1));color:#fff;border-color:transparent}
+
+/* ---------- tarjeta de concepto ---------- */
+.concept{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;
+  box-shadow:var(--shadow2);
+}
+.concept header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.concept .num{
+  width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;
+  font-family:'Sora';font-weight:700;font-size:.8rem;color:#fff;background:var(--cc,var(--p1));
+}
+.concept h3{font-size:1.05rem;flex:1}
+.concept .ok{font-size:20px}
+.block{padding:10px 12px;border-radius:13px;margin-bottom:8px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line)}
+.block b{display:block;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-weight:700}
+.block p{font-size:.88rem;line-height:1.5}
+.learnbtn{
+  width:100%;margin-top:6px;padding:12px;border-radius:14px;font-weight:700;font-size:.9rem;
+  border:2px solid var(--cc,var(--p1));color:var(--cc,var(--p1));background:transparent;transition:all .2s;
+}
+.learnbtn.on{background:var(--good);border-color:var(--good);color:#fff}
+
+/* ---------- flashcards (Practicar) ---------- */
+.fcwrap{perspective:1200px;margin-bottom:14px}
+.fc{position:relative;height:330px;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.fcwrap.flip .fc{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:24px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+}
+.face.bk{transform:rotateY(180deg);justify-content:flex-start;text-align:left;align-items:stretch;overflow:auto}
+.face .bigem{font-size:52px;animation:floatY 3.2s ease-in-out infinite}
+.face h3{font-size:1.5rem}
+.face .hint{font-size:.75rem;color:var(--muted)}
+.fcnav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.fcnav button{padding:11px;border-radius:13px;background:var(--card);border:1px solid var(--line);font-weight:600;font-size:.85rem;box-shadow:var(--shadow2)}
+.fcpos{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:8px}
+
+/* ---------- glosario ---------- */
+.search{
+  width:100%;padding:13px 16px;border-radius:15px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink);font-family:inherit;font-size:.95rem;margin-bottom:14px;box-shadow:var(--shadow2);outline:none;
+}
+.search:focus{border-color:var(--p2)}
+.gitem{
+  width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:13px 15px;margin-bottom:9px;box-shadow:var(--shadow2);transition:transform .15s;
+}
+.gitem:hover{transform:translateX(3px)}
+.gitem .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gitem h4{font-size:.95rem}
+.gtag{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:99px;color:#fff;background:var(--cc,var(--p1))}
+.gitem .def{font-size:.82rem;color:var(--muted);margin-top:5px;line-height:1.45}
+.gitem .more{display:none;margin-top:8px}
+.gitem.open .more{display:block;animation:fadeUp .25s ease}
+
+/* ---------- evaluación (quiz) ---------- */
+.qmodes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.qmodes button{padding:11px 6px;border-radius:13px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:.82rem;color:var(--muted);box-shadow:var(--shadow2);transition:all .2s}
+.qmodes button.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(124,92,255,.32)}
+.qsub{font-size:.9rem;color:var(--muted);font-style:italic;margin-top:8px}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.qhead .score{font-size:.82rem;font-weight:600;color:var(--muted)}
+.reset{padding:8px 13px;border-radius:11px;font-size:.76rem;font-weight:600;background:var(--card);border:1px solid var(--line)}
+.qbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:16px}
+.qbar>i{display:block;height:100%;background:var(--grad);border-radius:99px;transition:width .4s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow2);margin-bottom:12px}
+.qcard .qtag{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.qcard .qtext{font-size:1rem;line-height:1.55;font-weight:500}
+.opt{
+  display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:13px 14px;border-radius:15px;
+  background:var(--card);border:2px solid var(--line);margin-bottom:9px;font-size:.9rem;font-weight:600;
+  box-shadow:var(--shadow2);transition:all .2s;
+}
+.opt:hover{border-color:var(--p2)}
+.opt .lt{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;font-family:'Sora';font-weight:700;font-size:.78rem;background:var(--line)}
+.opt.good{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.opt.good .lt{background:var(--good);color:#fff}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card));animation:shake .35s}
+.opt.bad .lt{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.nextbtn{
+  width:100%;padding:14px;border-radius:15px;background:var(--grad);color:#fff;font-weight:700;font-size:.95rem;
+  box-shadow:0 8px 22px rgba(124,92,255,.35);margin-top:4px;animation:fadeUp .3s ease;
+}
+.qfeed{font-size:.84rem;line-height:1.5;padding:11px 13px;border-radius:13px;margin-bottom:10px;animation:fadeUp .3s ease}
+.qfeed.ok{background:color-mix(in srgb,var(--good) 13%,transparent);color:var(--good);font-weight:600}
+.qfeed.no{background:color-mix(in srgb,var(--bad) 11%,transparent)}
+
+/* ---------- mi avance ---------- */
+.ringbox{display:flex;align-items:center;gap:20px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow2);margin-bottom:14px}
+.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;flex:none;transition:background .5s}
+.ring>div{width:112px;height:112px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center}
+.ring b{font-family:'Sora';font-size:1.7rem;display:block}
+.ring span{font-size:.65rem;color:var(--muted);font-weight:600}
+.ringinfo{flex:1}
+.ringinfo h3{font-size:1.05rem;margin-bottom:6px}
+.ringinfo p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow2);margin-bottom:14px}
+.pcard h3{font-size:.95rem;margin-bottom:12px}
+.brow{margin-bottom:11px}
+.brow .lab{display:flex;justify-content:space-between;font-size:.78rem;font-weight:600;margin-bottom:5px}
+.brow .lab span:last-child{color:var(--muted)}
+.bar{height:9px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;transition:width .5s}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:560px){.badges{grid-template-columns:repeat(4,1fr)}}
+.badge{
+  text-align:center;padding:13px 6px;border-radius:16px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg) 55%,transparent);
+}
+.badge .be{font-size:26px;display:block;margin-bottom:5px}
+.badge b{font-size:.68rem;display:block;line-height:1.2}
+.badge small{font-size:.6rem;color:var(--muted);display:block;margin-top:3px;line-height:1.25}
+.badge.lock{opacity:.4;filter:grayscale(1)}
+.badge.unlock{border-color:var(--p2);box-shadow:0 0 14px rgba(124,92,255,.25)}
+
+/* ---------- celebración (overlay + confeti) ---------- */
+#cele{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(5,8,20,.78);backdrop-filter:blur(6px);padding:20px}
+#cele[hidden]{display:none}
+.celebox{
+  position:relative;z-index:2;max-width:420px;width:100%;text-align:center;padding:34px 24px;border-radius:26px;
+  background:var(--card);border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.5);animation:pop .5s ease;
+}
+.celebox .ce{font-size:62px;display:block;margin-bottom:8px;animation:floatY 2.4s ease-in-out infinite}
+.celebox h2{font-size:1.35rem;margin-bottom:8px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.celebox p{font-size:.92rem;line-height:1.55;color:var(--muted);margin-bottom:18px}
+.celebox button{width:100%;padding:14px;border-radius:15px;background:var(--grad);color:#fff;font-weight:700;font-size:.95rem}
+.confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.confetti i{
+  position:absolute;top:-4vh;width:10px;height:14px;border-radius:3px;opacity:.95;
+  animation:fall linear forwards;
+}
+@keyframes fall{to{transform:translateY(112vh) rotate(740deg);opacity:.6}}
+
+/* ---------- splash de bienvenida ---------- */
+#splash{
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;text-align:center;padding:28px;overflow:hidden;
+  background:radial-gradient(900px 600px at 70% 10%, rgba(124,92,255,.35), transparent 60%),
+             radial-gradient(700px 500px at 10% 80%, rgba(0,194,255,.30), transparent 60%), #070b18;
+  color:#edf1ff;
+}
+#splash[hidden]{display:none}
+#splash .slogo{width:92px;height:92px;border-radius:26px;background:var(--grad);display:grid;place-items:center;font-size:48px;box-shadow:0 16px 50px rgba(124,92,255,.5);animation:pop .6s ease}
+#splash h1{font-size:2rem;background:linear-gradient(135deg,#7fe3ff,#b9a5ff 50%,#ff9dc0);-webkit-background-clip:text;background-clip:text;color:transparent}
+#splash .sub{max-width:430px;font-size:.95rem;line-height:1.6;color:#aab4d8}
+#splash .feats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:460px}
+#splash .feats span{font-size:.74rem;font-weight:600;padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+#splash .go{
+  margin-top:8px;padding:15px 34px;border-radius:16px;background:var(--grad);color:#fff;font-weight:700;
+  font-size:1rem;font-family:'Sora';box-shadow:0 12px 36px rgba(255,77,141,.4);
+}
+.floaty{position:absolute;font-size:26px;opacity:.18;animation:floatY 4s ease-in-out infinite;pointer-events:none}
+
+/* ---------- toast y pie ---------- */
+#toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);z-index:95;
+  max-width:90vw;padding:12px 18px;border-radius:14px;background:var(--ink);color:var(--bg2);
+  font-size:.84rem;font-weight:600;box-shadow:var(--shadow);opacity:0;transition:all .35s;pointer-events:none;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:34px}
+.empty{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 10px}
+
+/* ---------- link "Saber más" y filtros del glosario ---------- */
+.linkbtn{
+  display:inline-flex;align-items:center;gap:6px;margin:4px 0 2px;padding:9px 14px;border-radius:11px;
+  font-size:.78rem;font-weight:700;text-decoration:none;color:#fff;background:var(--cc,var(--p1));box-shadow:var(--shadow2);
+}
+.linkbtn:hover{filter:brightness(1.1)}
+.gchips{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none}
+.gchips::-webkit-scrollbar{display:none}
+.gchips button{
+  flex:none;padding:7px 12px;border-radius:99px;font-size:.72rem;font-weight:700;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);
+}
+.gchips button.on{background:var(--grad);color:#fff;border-color:transparent}
+
+/* ---------- chapita de inglés + pronunciación + audio ---------- */
+.enchip{
+  display:flex;flex-direction:column;gap:5px;margin:0 0 10px;padding:9px 12px;border-radius:12px;
+  background:color-mix(in srgb,var(--cc,var(--p1)) 12%,transparent);border:1px solid var(--line);
+}
+.enrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.enflag{font-size:.9rem;flex:none}
+.enes{font-weight:700;font-size:.9rem;color:var(--ink)}
+.enterm{font-weight:700;font-size:.9rem;color:var(--cc,var(--p1))}
+.enpron{font-size:.8rem;color:var(--muted);font-style:italic}
+.enspeak{
+  margin-left:auto;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;cursor:pointer;
+  background:var(--cc,var(--p1));color:#fff;font-size:.85rem;flex:none;box-shadow:var(--shadow2);transition:transform .15s,filter .15s;
+}
+.enspeak:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.enspeak:active{transform:scale(.92)}
+.ennote{
+  font-size:.78rem;line-height:1.5;color:var(--muted);margin:-4px 0 10px;padding:8px 11px;border-radius:11px;
+  background:color-mix(in srgb,var(--bg) 50%,transparent);border:1px solid var(--line);
+}
+.enwarn{
+  font-size:.76rem;line-height:1.45;margin:-4px 0 12px;padding:8px 11px;border-radius:11px;
+  background:color-mix(in srgb,var(--warn) 16%,transparent);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);
+}
+</style>
+</head>
+<body class="dark">
+
+<!-- ===== Splash de bienvenida (1ª vez por sesión) ===== -->
+<div id="splash" hidden>
+  <span class="floaty" style="top:12%;left:12%">🤖</span>
+  <span class="floaty" style="top:20%;right:14%;animation-delay:.8s">🧠</span>
+  <span class="floaty" style="bottom:22%;left:18%;animation-delay:1.6s">💡</span>
+  <span class="floaty" style="bottom:14%;right:12%;animation-delay:.4s">✨</span>
+  <div class="slogo">🤖</div>
+  <h1>IA para Mortales</h1>
+  <p class="sub">La academia buena onda para entender la <b>inteligencia artificial</b> y la <b>programación</b>.<br>Sin jerga, sin humo, sin llorar. 🧉</p>
+  <div class="feats">
+    <span>📖 12 categorías</span><span>🇬🇧 Inglés + audio</span><span>🧠 Quiz</span><span>📚 Glosario</span><span>🔥 Rachas</span><span>🏅 Insignias</span><span>📴 Offline</span>
+  </div>
+  <button class="go" data-a="enter">🚀 Entrar a la academia</button>
+</div>
+
+<!-- ===== Encabezado ===== -->
+<header class="top">
+  <div class="brand">
+    <div class="logo">🤖</div>
+    <div><h1>IA para Mortales</h1><p>Academia anti-jerga</p></div>
+  </div>
+  <div class="actions">
+    <button class="icbtn" id="btnSound" data-a="sound" title="Sonido">🔊</button>
+    <button class="icbtn" id="btnDark" data-a="dark" title="Tema">☀️</button>
+    <button class="icbtn" id="btnInstall" data-a="install" title="Instalar app" hidden>📲</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Banner motivacional (rota solo y al tocarlo) -->
+  <button id="motiv" class="motiv" data-a="motive"></button>
+
+  <!-- Navegación principal -->
+  <nav class="tabs" id="nav">
+    <button data-a="nav" data-v="home">🏠 Inicio</button>
+    <button data-a="nav" data-v="gloss">📚 Glosario</button>
+    <button data-a="nav" data-v="quiz">🧠 Evaluación</button>
+    <button data-a="nav" data-v="progress">📊 Avance</button>
+  </nav>
+
+  <main id="app"></main>
+
+  <footer class="foot">Hecho con 🧠 + ❤️ para curiosos · v1 · funciona sin internet una vez cargada</footer>
+</div>
+
+<!-- ===== Overlay de celebración ===== -->
+<div id="cele" hidden>
+  <div class="confetti" id="confetti"></div>
+  <div class="celebox">
+    <span class="ce" id="celeEmoji">🎉</span>
+    <h2 id="celeTitle"></h2>
+    <p id="celeText"></p>
+    <button data-a="cele-ok">¡Seguimos! →</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   DATOS — para agregar contenido solo añade objetos aquí.
+   Cada concepto: { termino, simple, analogia, ejemplo, paraQue }
+   Cada categoría: { id, titulo, emoji, color, desc, conceptos[] }
+   ============================================================ */
+const DATA = { categorias: [
+/* ========== 1 · LENGUAJE DE LA IA ========== */
+{ id:"lenguaje-ia", titulo:"Lenguaje de la IA", emoji:"🤖", color:"#00c2ff",
+  desc:"Las palabras que escuchas por todos lados, explicadas sin humo.",
+  conceptos:[
+  { termino:"IA generativa",
+    simple:"La familia de IA que CREA cosas nuevas: textos, imágenes, música, video, código. No solo clasifica u ordena: produce.",
+    analogia:"La IA clásica era el crítico de cocina (opina si el plato está bueno); la generativa es el chef (cocina platos nuevos). Y cocina rápido.",
+    ejemplo:"ChatGPT escribiendo tu correo, Midjourney dibujando tu logo, Suno componiendo una canción de cumpleaños para tu perro.",
+    paraQue:"Es LA palabra del boom actual. Cuando digan «GenAI» en una reunión, ya sabes: IA que produce contenido." },
+  { termino:"Prompt",
+    simple:"La instrucción o pregunta que le escribes a una IA. Todo lo que le pides: desde «hazme un poema» hasta «explícame mi contrato».",
+    analogia:"Es como pedir en un restaurante: si dices «tráigame comida», llega cualquier cosa; si pides «lomo a lo pobre, carne a punto», llega lo que querías.",
+    ejemplo:"En vez de «hazme un mail», prueba: «escribe un mail cordial a mi jefe pidiendo el viernes libre, corto y sin sonar desesperado».",
+    paraQue:"Es LA habilidad de esta era: quien pide mejor, recibe mejor. Gratis y sin estudiar ingeniería." },
+  { termino:"Token",
+    simple:"Los pedacitos en que la IA corta el texto para procesarlo. No lee palabras completas: lee fichas (tokens) que pueden ser palabras, sílabas o signos.",
+    analogia:"Como cortar una pizza para comerla: la IA no se traga el texto entero, lo corta en pedazos manejables. «Inteligencia» pueden ser 3 pedazos.",
+    ejemplo:"Cuando una app dice «límite de 4.000 tokens», te está diciendo cuánto texto puede masticar de una vez (unas 3.000 palabras en español).",
+    paraQue:"Los servicios de IA cobran y limitan por token. Saberlo explica por qué a veces «se le olvida» parte de tu documento largo." },
+  { termino:"Modelo (LLM)",
+    simple:"El «cerebro» entrenado: un programa gigante que aprendió patrones del lenguaje leyendo cantidades enormes de texto. LLM = Large Language Model (gran modelo de lenguaje).",
+    analogia:"Un loro superdotado que leyó toda la biblioteca: no «sabe» como tú, pero aprendió tan bien cómo suenan las respuestas correctas que casi siempre acierta.",
+    ejemplo:"GPT, Claude, Gemini y Llama son modelos. ChatGPT es la app; GPT es el motor que va adentro (como auto vs. motor).",
+    paraQue:"Para no confundir la app con el cerebro. Cuando digan «salió un modelo nuevo», sabrás que hablan del motor, no de otra app más." },
+  { termino:"Ventana de contexto",
+    simple:"La cantidad de conversación que el modelo puede «tener en mente» a la vez. Lo que queda fuera de la ventana, lo olvida.",
+    analogia:"Como una conversación con tu abuelo: se acuerda perfecto de lo último que hablaron, pero lo del principio de la sobremesa... ya fue.",
+    ejemplo:"Si pegas un contrato de 200 páginas y al final le preguntas por la página 3, puede fallar si no le cupo todo en la ventana.",
+    paraQue:"Explica por qué la IA «olvida» cosas en chats largos. Truco: resume o reparte los documentos largos." },
+  { termino:"Temperatura",
+    simple:"Una perilla que regula cuán creativa o cuadrada es la respuesta. Baja = predecible y segura; alta = creativa y arriesgada.",
+    analogia:"Como el karaoke con o sin copete: temperatura baja canta la canción tal cual; temperatura alta improvisa, y a veces sale genial... y a veces no.",
+    ejemplo:"Para una receta de cocina, temperatura baja. Para nombres locos para tu emprendimiento, temperatura alta.",
+    paraQue:"Si una IA te da respuestas o muy fomes o muy delirantes, ahora sabes que hay una perilla detrás (y en muchas apps se puede ajustar)." },
+  { termino:"Parámetros",
+    simple:"Los millones (o miles de millones) de «perillas internas» que el modelo ajustó durante su entrenamiento. Ahí vive lo aprendido.",
+    analogia:"Como los condimentos de una cocina gigante: cada perilla sola no hace nada, pero millones bien calibradas crean el sabor exacto.",
+    ejemplo:"Cuando dicen «modelo de 70B», son 70 mil millones de parámetros. Más parámetros suele ser más capaz... y más caro.",
+    paraQue:"Para entender los titulares («¡modelo gigante!») sin creer que más grande siempre es mejor: también importan los datos y el entrenamiento." },
+  { termino:"Fine-tuning (ajuste fino)",
+    simple:"Tomar un modelo ya entrenado y darle un entrenamiento extra con datos específicos para especializarlo.",
+    analogia:"Un chef ya formado que toma un curso intensivo de sushi: no parte de cero, solo se especializa.",
+    ejemplo:"Una clínica afina un modelo general con miles de informes médicos para que hable como doctor y conozca sus protocolos.",
+    paraQue:"Para entender cómo las empresas hacen IA «a su medida» sin construir un cerebro desde cero." },
+  { termino:"Alucinación",
+    simple:"Cuando la IA inventa información con total seguridad: datos, fechas, citas o leyes que no existen, dichas con cara de experto.",
+    analogia:"Como ese amigo que jamás dice «no sé»: prefiere inventarse el dato con una seguridad envidiable.",
+    ejemplo:"Le pides 5 estudios científicos sobre un tema y te da 5 títulos perfectos, con autores y todo... y 2 no existen.",
+    paraQue:"La regla de oro de la era IA: verifica antes de usar. Especialmente datos, cifras, leyes y citas. Confiar a ciegas = papelón asegurado." },
+  { termino:"Embedding",
+    simple:"La forma en que la IA convierte palabras e ideas en números, de modo que conceptos parecidos queden «cerca» entre sí.",
+    analogia:"Un mapa donde «perro» y «gato» son vecinos de barrio, y «perro» y «factura electrónica» viven en ciudades distintas.",
+    ejemplo:"Cuando buscas «zapatillas para trotar» y la tienda te muestra «running shoes» aunque no escribiste eso: los embeddings entendieron que es lo mismo.",
+    paraQue:"Es el secreto detrás de los buscadores que «entienden lo que quisiste decir». Saberlo le quita lo mágico y le deja lo útil." },
+  { termino:"Multimodal",
+    simple:"Una IA que entiende y produce varios formatos: texto, imágenes, audio, video. No solo letras.",
+    analogia:"Antes la IA era como hablar por teléfono fijo (solo voz); ahora es videollamada con compartir pantalla: ve, escucha y habla.",
+    ejemplo:"Le sacas una foto al motor de tu auto y le preguntas «¿qué es esta pieza que gotea?» — y te responde mirando la foto.",
+    paraQue:"Abre usos cotidianos brutales: traducir un cartel con la cámara, describir fotos a personas no videntes, revisar un recibo escaneado." }
+]},
+
+/* ========== 2 · FUNDAMENTOS ========== */
+{ id:"fundamentos", titulo:"Fundamentos", emoji:"🧠", color:"#8b6bff",
+  desc:"Las bases de todo: qué hay debajo del capó, sin fórmulas.",
+  conceptos:[
+  { termino:"Algoritmo",
+    simple:"Una lista de pasos precisos para resolver algo. Nada más (y nada menos). Todo programa es, en el fondo, algoritmos.",
+    analogia:"Una receta de cocina: ingredientes, pasos en orden, resultado. Si la sigues igual, sale igual.",
+    ejemplo:"El algoritmo de Instagram decide qué te muestra: «si miró 3 videos de gatos, mostrar más gatos». Multiplicado por mil reglas.",
+    paraQue:"Cuando digan «el algoritmo me odia», sabrás que no es magia ni odio: son pasos y reglas diseñadas por humanos, con objetivos de empresa." },
+  { termino:"Datos",
+    simple:"La materia prima de la IA: textos, fotos, clics, compras, audios. Sin datos no hay aprendizaje.",
+    analogia:"Si la IA fuera un asado, los datos son la carne. Puedes tener la mejor parrilla (el modelo), pero sin carne no hay asado.",
+    ejemplo:"Para que una IA reconozca gatos, le mostraron millones de fotos de gatos (y de no-gatos, que también ayuda).",
+    paraQue:"La calidad de la IA depende de sus datos: datos malos o sesgados = IA mala o sesgada. Y tus datos valen oro: por algo todo es «gratis»." },
+  { termino:"Machine Learning",
+    simple:"Programas que aprenden de ejemplos en vez de seguir reglas escritas a mano. Les das casos, encuentran patrones solos.",
+    analogia:"Enseñar a andar en bicicleta: no le dictas las leyes de la física a tu hijo; lo subes a la bici y aprende cayéndose (el ML se cae millones de veces, pero en digital).",
+    ejemplo:"Tu correo aprende qué es spam viendo millones de correos marcados por usuarios. Nadie escribió la regla «si dice príncipe nigeriano, borrar».",
+    paraQue:"Es EL cambio de paradigma: antes le decíamos a los computadores qué hacer; ahora les mostramos ejemplos y aprenden. Eso explica casi toda la IA actual." },
+  { termino:"Deep Learning",
+    simple:"Machine learning con redes neuronales de muchas capas. Cada capa entiende algo más complejo que la anterior.",
+    analogia:"Una empresa con pisos: el primer piso detecta líneas, el segundo formas, el tercero caras, y el gerente del último piso dice «es tu tía Marta».",
+    ejemplo:"El reconocimiento facial del teléfono: capas que pasan de píxeles → bordes → ojos y nariz → tu cara.",
+    paraQue:"Cuando escuches «deep learning» sabrás que no es puro marketing: es la técnica que resucitó la IA en 2012 y la que hace posible ChatGPT." },
+  { termino:"Red neuronal",
+    simple:"Un sistema de «neuronas» matemáticas conectadas que se pasan señales. Inspirada (lejanamente) en el cerebro.",
+    analogia:"Un estadio haciendo la ola: cada persona (neurona) solo mira a su vecino y decide si se levanta. Nadie dirige, pero la ola aparece.",
+    ejemplo:"Detrás del traductor de Google hay redes neuronales pasándose tu frase en cadena hasta que sale en otro idioma.",
+    paraQue:"Para entender que la IA no «piensa» con lógica humana: son millones de cálculos simples que, en conjunto, producen algo que parece inteligencia." },
+  { termino:"Entrenamiento",
+    simple:"El proceso (carísimo y lento) donde el modelo aprende: ve millones de ejemplos y ajusta sus perillas internas una y otra vez.",
+    analogia:"Los años de estudio de un médico: largos, caros, intensos. Se hace una vez (y de vez en cuando un curso de actualización).",
+    ejemplo:"Entrenar un modelo grande puede costar millones de dólares en computadores y meses de cálculo. Por eso lo hacen pocas empresas.",
+    paraQue:"Explica por qué un modelo «no sabe» lo que pasó ayer: aprendió hasta la fecha de su entrenamiento. Lo nuevo hay que dárselo en el prompt." },
+  { termino:"Inferencia",
+    simple:"El momento en que el modelo ya entrenado responde tu pregunta. Cada respuesta que te da es una inferencia.",
+    analogia:"El médico ya estudió (entrenamiento); atenderte en la consulta es la inferencia: rápida, usa lo que ya sabe.",
+    ejemplo:"Cada vez que ChatGPT te responde, no está aprendiendo de ti en ese instante: está aplicando lo que ya aprendió.",
+    paraQue:"Aclara el mito «la IA aprende de todo lo que le digo al momento». En general no: responde con lo entrenado (aunque tus chats sí pueden usarse para entrenar versiones futuras — revisa la configuración de privacidad)." },
+  { termino:"GPU",
+    simple:"Los chips que hacen los cálculos de la IA. Nacieron para videojuegos y resultaron perfectos para entrenar redes neuronales.",
+    analogia:"Un CPU es un chef brillante que hace un plato a la vez; una GPU son 10.000 ayudantes picando cebolla al mismo tiempo. La IA necesita lo segundo.",
+    ejemplo:"NVIDIA se volvió una de las empresas más valiosas del mundo vendiendo «palas» (GPUs) en plena fiebre del oro de la IA.",
+    paraQue:"Para entender titulares de economía y por qué los países pelean por chips: sin GPU no hay IA." },
+  { termino:"La nube",
+    simple:"Computadores de otra persona (gigantescos centros de datos) a los que te conectas por internet. Ahí vive y corre la IA.",
+    analogia:"No tienes una central eléctrica en tu casa: te enchufas a la red. Con la IA igual: el cerebro está en un galpón gigante y tú te conectas.",
+    ejemplo:"Cuando usas ChatGPT desde el teléfono, tu pregunta viaja a un centro de datos, el modelo responde allá, y la respuesta vuelve. Tu teléfono casi no trabaja.",
+    paraQue:"Explica por qué necesitas internet para la mayoría de las IA, y por qué tus datos «viajan» — un tema clave de privacidad." }
+]},
+/* ========== 3 · FILOSOFÍAS Y ENFOQUES ========== */
+{ id:"filosofias", titulo:"Filosofías y enfoques", emoji:"🧭", color:"#ffa630",
+  desc:"Las grandes ideas y debates: cómo se piensa la IA.",
+  conceptos:[
+  { termino:"IA simbólica",
+    simple:"El enfoque clásico: inteligencia a punta de reglas lógicas escritas por humanos. «Si pasa A, haz B».",
+    analogia:"Un manual de empleado infinito: intenta tener una regla para cada situación. Funciona... hasta que llega una situación sin regla.",
+    ejemplo:"Los primeros programas de ajedrez y los sistemas expertos de los 80 que diagnosticaban enfermedades con árboles de reglas.",
+    paraQue:"Para entender de dónde viene la IA y por qué cambió: el mundo real tiene demasiadas excepciones para escribirlas todas a mano." },
+  { termino:"IA conexionista",
+    simple:"El enfoque ganador actual: en vez de reglas, redes que aprenden de ejemplos. La inteligencia «emerge» de las conexiones.",
+    analogia:"En vez de darle el manual al empleado nuevo, lo pones a mirar a los mejores durante un año. Nadie le dictó reglas; las absorbió.",
+    ejemplo:"Todo lo moderno: ChatGPT, el reconocimiento de voz, los autos que «ven». Ninguno funciona con reglas escritas a mano.",
+    paraQue:"Es el debate de fondo de 70 años de IA (¿reglas o ejemplos?) y explica por qué nadie sabe exactamente «qué hay dentro» de los modelos actuales." },
+  { termino:"IA estrecha (ANI)",
+    simple:"IA especialista en UNA cosa: jugar ajedrez, recomendar películas, traducir. Toda la IA que existe hoy es estrecha (aunque algunas son muy versátiles).",
+    analogia:"Un campeón mundial de ajedrez que no sabe freír un huevo. Brillante en su casilla, perdido fuera de ella.",
+    ejemplo:"El mejor modelo de diagnóstico de radiografías no puede recomendarte una película. Y viceversa.",
+    paraQue:"Para bajar el pánico de ciencia ficción: lo que existe hoy son herramientas especializadas, no un robot que «quiere» algo." },
+  { termino:"AGI (IA general)",
+    simple:"La hipotética IA tan capaz como un humano en cualquier tarea intelectual. No existe. Es la meta declarada de varios laboratorios.",
+    analogia:"Es el «algún día llegaremos a Marte» de la IA: hay cohetes apuntando, fechas tentativas y mucha discusión sobre si falta poco o muchísimo.",
+    ejemplo:"Cuando los CEOs dicen «la AGI llegará en X años», hablan de esto. Spoiler: llevan décadas corriéndole la fecha.",
+    paraQue:"Para leer titulares con calma: «IA supera a humanos en examen X» no es AGI; es una IA estrecha muy buena en exámenes." },
+  { termino:"Aprendizaje supervisado",
+    simple:"Aprender con ejemplos etiquetados: le muestras la pregunta Y la respuesta correcta, millones de veces.",
+    analogia:"Estudiar con la guía de respuestas al final del libro: haces el ejercicio, miras la solución, corriges. Repite un millón de veces.",
+    ejemplo:"Miles de fotos etiquetadas «perro» / «no perro» enseñan a la IA a reconocer perros.",
+    paraQue:"Es el método más común y explica por qué etiquetar datos es una industria (con miles de personas etiquetando fotos y textos)." },
+  { termino:"Aprendizaje no supervisado",
+    simple:"Aprender sin etiquetas: la IA recibe datos crudos y encuentra grupos y patrones por su cuenta.",
+    analogia:"Ordenar un cajón de cables sin que nadie te diga cómo: solo, terminas agrupando por tipo, tamaño y «misterios que no sé qué cargan».",
+    ejemplo:"Un supermercado descubre que hay «compradores de fin de mes» y «compradores gourmet» sin que nadie definiera esos grupos: emergieron de los datos.",
+    paraQue:"Así las empresas te segmentan sin conocerte. Útil saberlo cuando te preguntes «¿cómo supo Spotify que me gustaría esto?»." },
+  { termino:"Aprendizaje por refuerzo",
+    simple:"Aprender a punta de premio y castigo: la IA prueba acciones, recibe puntos por las buenas y aprende a maximizar el premio.",
+    analogia:"Enseñarle a un perro: galleta cuando se sienta, nada cuando muerde la zapatilla. Con suficientes galletas virtuales, la IA aprende jugadas de genio.",
+    ejemplo:"AlphaGo aprendió jugando millones de partidas contra sí mismo, premiándose por ganar — y terminó venciendo al campeón del mundo.",
+    paraQue:"Es la técnica detrás de las IA que «descubren» estrategias que ningún humano les enseñó. También se usa para pulir chatbots (ver RLHF)." },
+  { termino:"RLHF (refuerzo con feedback humano)",
+    simple:"Personas califican respuestas del modelo («esta es útil, esta es grosera») y el modelo aprende a preferir las bien evaluadas.",
+    analogia:"Pulir a un empleado nuevo brillante pero sin filtro: sabe mucho, pero le enseñas modales con feedback constante hasta que atiende público sin escándalos.",
+    ejemplo:"Es gran parte de por qué ChatGPT es amable y se niega a ciertas cosas: humanos calificaron miles de respuestas para moldearlo.",
+    paraQue:"Para entender que el «carácter» de un chatbot no es casualidad: fue moldeado por decisiones (y valores) humanos." },
+  { termino:"Alineamiento",
+    simple:"El desafío de que la IA haga lo que realmente queremos, no una interpretación literal y desastrosa de lo que pedimos.",
+    analogia:"El genio de la lámpara: pides «quiero ser rico» y te hace heredero... eliminando a la familia. Cumplió el deseo, no la intención.",
+    ejemplo:"Una IA premiada por «maximizar clics» aprende a recomendar contenido cada vez más extremo. Nadie pidió eso; emergió del objetivo mal puesto.",
+    paraQue:"Es EL tema de seguridad en IA. Cuando oigan «alineamiento», hablan de esto: objetivos bien puestos y sistemas que respeten la intención humana." },
+  { termino:"Caja negra",
+    simple:"Que ni los propios creadores pueden explicar exactamente por qué un modelo dio una respuesta concreta. Ven que funciona, no el porqué de cada salida.",
+    analogia:"La intuición de la abuela para la sazón: el resultado es excelente, pero pregúntale cuánta sal puso. «Lo que pide el guiso», te dirá. Gracias, abuela.",
+    ejemplo:"Un banco rechaza tu crédito «porque lo dijo el modelo». ¿Qué variable pesó? A veces, nadie puede decírtelo con precisión.",
+    paraQue:"Clave para exigir transparencia: hay decisiones (créditos, diagnósticos, contrataciones) donde «no sabemos por qué» no debería ser respuesta aceptable." },
+  { termino:"IA abierta vs cerrada",
+    simple:"El debate sobre si los modelos potentes deben publicarse abiertos (que cualquiera los use y estudie) o mantenerse cerrados (control de la empresa).",
+    analogia:"¿Receta pública o receta secreta? Los abiertos dicen «la ciencia avanza compartiendo»; los cerrados, «no le pases la receta de la dinamita a cualquiera».",
+    ejemplo:"Meta libera Llama (abierto); OpenAI y Anthropic mantienen sus mejores modelos cerrados tras una API. DeepSeek sacudió el tablero liberando modelos potentes gratis.",
+    paraQue:"Define quién controla la IA: ¿pocas empresas o todo el mundo? Uno de los debates de poder más importantes de la década." },
+  { termino:"Optimistas vs catastrofistas",
+    simple:"Las dos tribus del debate: aceleracionistas («la IA traerá abundancia, ¡a fondo!») y preocupados por los riesgos («frenemos hasta hacerlo seguro»), con todo un espectro al medio.",
+    analogia:"La mesa familiar antes de un viaje en auto: el tío que dice «¡lleguemos en 8 horas, sin parar!» y la abuela que pide revisar los frenos primero. Ambos quieren llegar.",
+    ejemplo:"Cartas públicas pidiendo pausar la IA firmadas por expertos... y otros expertos calificándolas de exageradas. Hinton dejó Google para advertir riesgos; LeCun dice que el miedo es ciencia ficción.",
+    paraQue:"Para ubicar a cada opinólogo que veas en la tele: ¿desde qué tribu habla? Y para formarte TU propia posición informada." }
+]},
+
+/* ========== 4 · PLATAFORMAS Y HERRAMIENTAS ========== */
+{ id:"plataformas", titulo:"Plataformas y herramientas", emoji:"🛠️", color:"#22c55e",
+  desc:"El arsenal actual: quién es quién y para qué sirve cada cosa.",
+  conceptos:[
+  { termino:"ChatGPT (OpenAI)",
+    simple:"El chatbot que hizo explotar la era IA en 2022. Conversa, escribe, resume, traduce, programa, analiza imágenes.",
+    analogia:"Es el «Kleenex» de la IA: la marca que se volvió sinónimo del producto. Mucha gente dice ChatGPT para referirse a cualquier IA.",
+    ejemplo:"Gente lo usa para redactar correos, planear viajes, entender exámenes médicos o practicar entrevistas de trabajo.",
+    paraQue:"Es el punto de entrada más común a la IA. Saber qué es (y qué no es) te ubica en cualquier conversación del tema.",
+    link:"https://chatgpt.com" },
+  { termino:"Claude (Anthropic)",
+    simple:"El asistente de Anthropic, empresa fundada con la seguridad como prioridad. Destaca en textos largos, análisis, escritura y programación.",
+    analogia:"Si los chatbots fueran compañeros de curso, Claude es el que escribe bonito, se lee el libro completo antes de opinar y no copia en las pruebas.",
+    ejemplo:"Le pegas un contrato de 80 páginas y le pides un resumen con los puntos riesgosos en lenguaje simple. (Dato curioso: esta app fue construida con Claude. 👋)",
+    paraQue:"Conocer alternativas te da poder de elección: cada asistente tiene fortalezas distintas y conviene probar más de uno.",
+    link:"https://claude.ai" },
+  { termino:"Gemini (Google)",
+    simple:"La IA de Google, integrada en su ecosistema: buscador, Gmail, Docs, Android, YouTube.",
+    analogia:"Es como el hijo del dueño del mall: quizás no es tu favorito, pero tiene llaves de todas las tiendas (Search, YouTube, Maps, Gmail).",
+    ejemplo:"Pedirle que resuma los correos no leídos de la semana o buscar algo combinando texto y una foto.",
+    paraQue:"La IA integrada donde ya trabajas es la que probablemente más usarás sin darte cuenta. Bueno saber quién es.",
+    link:"https://gemini.google.com" },
+  { termino:"Copilot (Microsoft)",
+    simple:"La IA de Microsoft integrada en Windows, Office y Edge: resume tus Word, arma PowerPoints, analiza Excels.",
+    analogia:"Es Clippy que fue al gimnasio, sacó un doctorado y volvió con ganas de redimirse.",
+    ejemplo:"«Resume este Excel de ventas y arma una presentación de 5 láminas» — dentro del mismo Office.",
+    paraQue:"Si trabajas con Office, esta es la IA que te aparecerá quieras o no. Mejor saber qué puede hacer por ti.",
+    link:"https://copilot.microsoft.com" },
+  { termino:"Llama / Meta AI",
+    simple:"Los modelos abiertos de Meta (Facebook, Instagram, WhatsApp). Llama se descarga gratis; Meta AI es el asistente metido en sus apps.",
+    analogia:"Meta regala el motor (Llama) para que todos construyan autos, mientras instala su propio chofer (Meta AI) en cada app que ya usas.",
+    ejemplo:"El circulito azul de WhatsApp e Instagram: ese es Meta AI. Y miles de startups construyen productos sobre Llama gratis.",
+    paraQue:"Probablemente ya tienes IA de Meta en el bolsillo sin haberla pedido. Y Llama explica medio ecosistema open source.",
+    link:"https://www.meta.ai" },
+  { termino:"DeepSeek",
+    simple:"El laboratorio chino que en 2025 remeció al mundo: modelos de primer nivel, abiertos y entrenados (dicen) con una fracción del costo habitual.",
+    analogia:"El equipo chico que llega a la final del mundial gastando la décima parte que los grandes. Los grandes todavía se preguntan cómo.",
+    ejemplo:"Su lanzamiento R1 borró cientos de miles de millones del valor bursátil de las tecnológicas de EE.UU. en un día. Un chatbot moviendo Wall Street.",
+    paraQue:"Muestra que la carrera de la IA es geopolítica (EE.UU. vs China) y que los costos pueden desplomarse de un día para otro.",
+    link:"https://www.deepseek.com" },
+  { termino:"Grok (xAI)",
+    simple:"La IA de xAI (empresa de Elon Musk), integrada en X (Twitter). Se promociona como más irreverente y con acceso a lo que pasa en X al minuto.",
+    analogia:"El chatbot que se sienta en la mesa de los pesados del curso: responde con talla y opina de la polémica del día.",
+    ejemplo:"Preguntarle por la noticia de hace una hora usando los posts de X como fuente (con los riesgos que eso implica, claro).",
+    paraQue:"Para conocer el ecosistema completo y entender que cada chatbot tiene personalidad y sesgos según quién lo construye.",
+    link:"https://grok.com" },
+  { termino:"Perplexity",
+    simple:"Un buscador con IA: responde tu pregunta con un resumen y CITA sus fuentes con links. Mezcla de Google con chatbot.",
+    analogia:"El bibliotecario ideal: no te tira 10 links para que te las arregles (Google) ni responde de memoria sin citar (chatbot); te responde Y te muestra de dónde sacó cada cosa.",
+    ejemplo:"«¿Qué celular de menos de $300.000 tiene mejor cámara?» → respuesta resumida con links a los análisis que usó.",
+    paraQue:"La forma moderna de buscar: respuestas verificables. Ideal para combatir el problema de las alucinaciones.",
+    link:"https://www.perplexity.ai" },
+  { termino:"NotebookLM (Google)",
+    simple:"Herramienta donde TÚ subes tus documentos y la IA responde basándose solo en ellos. Hasta genera un podcast con dos voces conversando sobre tus archivos.",
+    analogia:"Un ayudante que se lee tus 300 páginas de apuntes y después te las explica en la micro, en formato conversación de amigos.",
+    ejemplo:"Subes el manual de tu trabajo o tus apuntes y le pides resúmenes, guías de estudio o el famoso podcast de dos voces.",
+    paraQue:"De las herramientas más útiles para estudiar o trabajar: IA limitada a TUS fuentes = muchas menos alucinaciones.",
+    link:"https://notebooklm.google.com" },
+  { termino:"Generadores de imagen",
+    simple:"IA que crea imágenes desde texto: describes la escena y la dibuja. Midjourney, DALL·E y Stable Diffusion son los famosos.",
+    analogia:"Un dibujante genial con los ojos vendados que pinta exactamente lo que le describas... aunque por años le costaron las manos (busca «IA 6 dedos» y entenderás).",
+    ejemplo:"«Un gato astronauta tomando once en Valparaíso, estilo acuarela» → imagen lista en 20 segundos.",
+    paraQue:"Útil para emprendimientos (logos, afiches, redes) y clave para desconfiar: si la IA crea fotos perfectas, no toda «foto» que veas es real.",
+    link:"https://www.midjourney.com" },
+  { termino:"Voz y música (ElevenLabs, Suno)",
+    simple:"IA que clona y crea voces (ElevenLabs) o compone canciones completas con letra y todo (Suno, Udio) desde una descripción.",
+    analogia:"Un estudio de grabación con sesionistas infinitos que no cobran por hora y nunca llegan tarde. El sindicato de músicos tiene opiniones.",
+    ejemplo:"«Hazme una cumbia sobre mi gato que se cree león» → canción completa con voz, en 30 segundos. (Sí, es tan divertido como suena.)",
+    paraQue:"Creatividad al alcance de todos y otra alerta de seguridad: las voces ya se clonan con segundos de audio.",
+    link:"https://suno.com" },
+  { termino:"Video con IA (Sora, Veo, Runway)",
+    simple:"Generadores de video desde texto: describes la escena y crean clips cada vez más realistas. La frontera actual de la IA generativa.",
+    analogia:"Un equipo de Hollywood embotellado: director, cámaras y efectos especiales en una cajita que funciona con frases.",
+    ejemplo:"«Dron sobrevolando Torres del Paine al amanecer, estilo cine» → clip listo para tu video. Sora (OpenAI), Veo (Google) y Runway compiten.",
+    paraQue:"Cambiará la publicidad, el cine y las redes… y exige más ojo crítico que nunca con los videos «reales».",
+    link:"https://openai.com/sora" },
+  { termino:"Hugging Face",
+    simple:"El «GitHub de la IA»: la plataforma donde la comunidad comparte miles de modelos abiertos, datasets y demos gratis.",
+    analogia:"La feria libre de la IA: puestos de todos los tamaños, productos frescos de todo el mundo, y puedes probar antes de llevar.",
+    ejemplo:"¿Quieres probar un modelo que convierte fotos en anime o uno que transcribe audio? Ahí hay demos gratis para jugar.",
+    paraQue:"La puerta de entrada al mundo open source de la IA, y termómetro de hacia dónde va la comunidad.",
+    link:"https://huggingface.co" },
+  { termino:"Asistentes de código",
+    simple:"IA que escribe y corrige código: describes lo que quieres y la IA propone el programa (GitHub Copilot, Claude Code, Cursor...).",
+    analogia:"El ayudante de cocina turbo: tú decides el menú y el sabor; él pica, mezcla y limpia a velocidad sobrehumana. El chef sigues siendo tú.",
+    ejemplo:"Una persona sin saber programar le pide «hazme una página para mi negocio de empanadas» y obtiene algo funcional en minutos.",
+    paraQue:"Está cambiando quién puede crear software. No necesitas ser programador para construir cosas simples — y eso es una puerta gigante.",
+    link:"https://claude.com/claude-code" },
+  { termino:"API",
+    simple:"La forma en que los programas conversan entre sí. Una IA «con API» puede conectarse a otras apps y servicios.",
+    analogia:"El mesero entre tú y la cocina: no entras a cocinar tú mismo; pides por el mesero (la API) y la cocina (el servicio) te manda el plato.",
+    ejemplo:"Una tienda conecta su web con la API de un modelo de IA y crea su propio chat de atención al cliente, sin inventar la IA desde cero.",
+    paraQue:"Explica cómo la IA aparece «dentro» de mil apps: casi nadie construye modelos; la mayoría se conecta a uno por API." },
+  { termino:"Agente",
+    simple:"Una IA que no solo responde: ejecuta tareas de varios pasos usando herramientas (navegar, escribir archivos, mandar correos) con un objetivo.",
+    analogia:"Diferencia entre un GPS y un chofer: el chatbot te dice la ruta (responde); el agente maneja, carga bencina y te avisa cuando llegó.",
+    ejemplo:"«Búscame vuelo y hotel para Semana Santa bajo $400.000 y déjame las 3 mejores opciones en una tabla» — y el agente navega, compara y arma el informe.",
+    paraQue:"Es LA palabra de moda y el próximo salto: de IA que conversa a IA que hace. Entenderla te prepara para lo que viene." }
+]},
+/* ========== 5 · HISTORIA ========== */
+{ id:"historia", titulo:"Historia de la IA", emoji:"🕰️", color:"#eab308",
+  desc:"Cómo llegamos hasta aquí: 75 años en capítulos cortos.",
+  conceptos:[
+  { termino:"Test de Turing (1950)",
+    simple:"Alan Turing propuso: si conversas por escrito con «algo» y no puedes distinguir si es humano o máquina, en la práctica es inteligente.",
+    analogia:"El juego de las citas a ciegas por chat: si después de una hora no cachas que era un robot... el robot ganó.",
+    ejemplo:"Los chatbots actuales pasan versiones informales del test todos los días: millones chatean sin saber (ni preguntar) si hay un humano detrás.",
+    paraQue:"Fue la pregunta fundacional («¿pueden pensar las máquinas?») y sigue vigente: ahora que lo pasan, ¿significa que piensan? El debate sigue.",
+    link:"https://es.wikipedia.org/wiki/Prueba_de_Turing" },
+  { termino:"Dartmouth (1956)",
+    simple:"El taller de verano donde se acuñó el término «inteligencia artificial». Un grupo de científicos creyó que en un verano avanzarían el grueso del problema.",
+    analogia:"Como decir «este fin de semana ordeno la bodega completa». Sabemos cómo termina: 70 años después, seguimos ordenando.",
+    ejemplo:"De ese optimismo salieron décadas de investigación y financiamiento... y también expectativas infladas que después pasaron la cuenta.",
+    paraQue:"Para reconocer un patrón que se repite hasta hoy: el entusiasmo de la IA siempre corre más rápido que la IA misma.",
+    link:"https://es.wikipedia.org/wiki/Conferencia_de_Dartmouth" },
+  { termino:"El perceptrón (1958)",
+    simple:"La primera neurona artificial que aprendía de ejemplos. La prensa de la época prometió máquinas que caminarían y hablarían «pronto».",
+    analogia:"Era UNA neurona y le pidieron que fuera un cerebro: como contratar a un junior el lunes y pedirle que dirija la empresa el martes.",
+    ejemplo:"Aprendía a distinguir formas simples. Luego un libro famoso demostró sus límites matemáticos y el entusiasmo se congeló por años.",
+    paraQue:"La semilla de las redes actuales: la idea era correcta, solo faltaban 60 años de datos y computación. La paciencia también es ciencia.",
+    link:"https://es.wikipedia.org/wiki/Perceptr%C3%B3n" },
+  { termino:"ELIZA (1966)",
+    simple:"El primer chatbot de la historia: un programa simple que imitaba a un psicólogo repitiendo tus frases como preguntas. La gente igual le contaba su vida.",
+    analogia:"El amigo que solo responde «¿y eso cómo te hace sentir?»... y aún así te desahogas con él. Técnica simple, efecto poderoso.",
+    ejemplo:"Tú: «estoy triste por mi trabajo». ELIZA: «¿por qué estás triste por tu trabajo?». Su creador, Weizenbaum, se asustó de lo rápido que la gente se encariñó.",
+    paraQue:"Demostró hace 60 años que los humanos nos encariñamos con máquinas que «escuchan». Tema más vigente que nunca.",
+    link:"https://es.wikipedia.org/wiki/ELIZA" },
+  { termino:"Los inviernos de la IA",
+    simple:"Períodos (años 70 y fines de los 80) donde el financiamiento y el interés colapsaron porque las promesas no se cumplieron.",
+    analogia:"Como las dietas de enero: expectativas enormes, resultados modestos, abandono total... hasta el próximo enero.",
+    ejemplo:"Gobiernos y empresas cortaron fondos tras informes lapidarios; «IA» se volvió mala palabra en las universidades por años.",
+    paraQue:"Contexto para el boom actual: cuando alguien pregunte «¿y esto no será otra burbuja?», sabrás que la pregunta tiene historia.",
+    link:"https://es.wikipedia.org/wiki/Invierno_de_la_IA" },
+  { termino:"Sistemas expertos (años 80)",
+    simple:"El boom de la IA simbólica: programas con miles de reglas «si pasa esto → concluye esto otro» para imitar a expertos humanos en temas acotados.",
+    analogia:"Embotellar a tu mejor mecánico en un computador a punta de entrevistarlo: «¿y si suena tac-tac?» → «revisa la biela». Funcionaba… hasta la pregunta sin regla.",
+    ejemplo:"MYCIN diagnosticaba infecciones mejor que muchos médicos jóvenes. Pero mantener miles de reglas al día resultó una pesadilla y el enfoque se agotó.",
+    paraQue:"Explica el segundo invierno de la IA y por qué el mundo se pasó al aprendizaje con datos." },
+  { termino:"Deep Blue (1997)",
+    simple:"La máquina de IBM que venció al campeón mundial de ajedrez, Garry Kasparov. Primera gran derrota simbólica del intelecto humano.",
+    analogia:"Ganó por fuerza bruta educada: calculaba 200 millones de jugadas por segundo. Como ganar un asado comiéndote la vaca entera: efectivo, pero no elegante.",
+    ejemplo:"Kasparov llegó a acusar trampa: no concebía que una máquina jugara así. Hoy cualquier app de ajedrez del teléfono le ganaría a Deep Blue.",
+    paraQue:"Marca la diferencia entre calcular y «entender»: Deep Blue no sabía que estaba jugando. Útil para discusiones de sobremesa sobre si la IA «piensa».",
+    link:"https://es.wikipedia.org/wiki/Deep_Blue_(computadora)" },
+  { termino:"Watson (2011)",
+    simple:"La IA de IBM que ganó Jeopardy!, el concurso de preguntas más famoso de EE.UU., contra los dos mejores campeones humanos, en TV abierta.",
+    analogia:"El primo que va a «¿Quién quiere ser millonario?» y se lo lleva todo… pero después no logra ejercer de eso en la vida real.",
+    ejemplo:"IBM prometió que Watson revolucionaría la medicina; años de marketing después, el proyecto de salud se vendió por partes. Gran demo, difícil realidad.",
+    paraQue:"Lección clave del rubro: ganar un concurso no es lo mismo que ser útil en el mundo real. Aplica a muchos anuncios de IA de hoy.",
+    link:"https://es.wikipedia.org/wiki/Watson_(inteligencia_artificial)" },
+  { termino:"ImageNet y AlexNet (2012)",
+    simple:"El momento en que el deep learning demolió a la competencia en reconocimiento de imágenes y resucitó la IA. El big bang moderno.",
+    analogia:"Como cuando un equipo chico golea en la final del mundial: nadie lo vio venir, y al día siguiente todos querían jugar como ellos.",
+    ejemplo:"Tres investigadores con GPUs de videojuegos redujeron el error de reconocimiento casi a la mitad. Las big tech salieron de cacería de expertos en redes neuronales.",
+    paraQue:"Este es el inicio de la era actual: todo lo que usas hoy (caras, voz, traducción, ChatGPT) desciende de ese momento.",
+    link:"https://es.wikipedia.org/wiki/AlexNet" },
+  { termino:"AlphaGo (2016)",
+    simple:"La IA de DeepMind que venció al campeón mundial de Go, un juego tan complejo que se creía a décadas de ser dominado por máquinas.",
+    analogia:"La famosa «jugada 37»: un movimiento tan raro que los comentaristas pensaron que era un error. Era genialidad no humana. Como si tu rival inventara un mate nuevo en pleno torneo.",
+    ejemplo:"Lee Sedol, el campeón derrotado, se retiró años después diciendo que la IA «no puede ser superada». Hay un documental (se llama AlphaGo) y sí, vas a llorar.",
+    paraQue:"Demostró que la IA puede ser creativa (a su manera) y descubrir estrategias que la humanidad no encontró en 2.500 años de Go.",
+    link:"https://es.wikipedia.org/wiki/AlphaGo" },
+  { termino:"Transformers (2017)",
+    simple:"Arquitectura de red neuronal presentada en el paper «Attention Is All You Need» (Google). Es la T de GPT y la base de toda la IA generativa actual.",
+    analogia:"Antes los modelos leían como tú lees un contrato: línea por línea, olvidando el inicio. El transformer lee como quien mira un mapa: todo a la vez, atendiendo a lo importante.",
+    ejemplo:"GPT, Claude, Gemini, los generadores de imagen y hasta modelos de biología usan transformers. Un paper de 11 páginas cambió la industria entera.",
+    paraQue:"Cuando alguien pregunte «¿y por qué AHORA explotó la IA?», la respuesta corta es: transformers (2017) + GPUs + montañas de datos.",
+    link:"https://es.wikipedia.org/wiki/Transformador_(modelo_de_aprendizaje_autom%C3%A1tico)" },
+  { termino:"La era ChatGPT (2022→)",
+    simple:"OpenAI lanzó ChatGPT en noviembre de 2022: 100 millones de usuarios en 2 meses, el producto de adopción más rápida de la historia hasta entonces.",
+    analogia:"La IA llevaba años en los laboratorios, como banda tocando en bares. ChatGPT fue su Festival de Viña: misma música, público planetario de un día para otro.",
+    ejemplo:"En meses: Microsoft metió IA en Office, Google aceleró Gemini, y tu grupo familiar de WhatsApp empezó a mandar audios «hechos con IA».",
+    paraQue:"Es el contexto de TODO lo que vivimos hoy: la carrera entre empresas, los miles de millones invertidos y por qué tu jefe dice «hay que meterle IA» a todo.",
+    link:"https://es.wikipedia.org/wiki/ChatGPT" }
+]},
+
+/* ========== 6 · PERSONAJES DE LA IA ========== */
+{ id:"personajes", titulo:"Personajes de la IA", emoji:"👤", color:"#ec4899",
+  desc:"Las personas detrás de la revolución: pioneros, padrinos y CEOs.",
+  conceptos:[
+  { termino:"Ada Lovelace",
+    simple:"Matemática del siglo XIX, considerada la primera programadora de la historia: escribió algoritmos para una máquina que ni siquiera llegó a construirse.",
+    analogia:"Escribió el manual de vuelo antes de que existieran los aviones. Visión nivel: leyenda.",
+    ejemplo:"En 1843 ya teorizó que las máquinas podrían crear música si se les daban las reglas correctas. Se adelantó ~180 años a Suno.",
+    paraQue:"Para empezar la historia donde corresponde: con una mujer adelantada a su siglo. Y para ganar trivias.",
+    link:"https://es.wikipedia.org/wiki/Ada_Lovelace" },
+  { termino:"Alan Turing",
+    simple:"Matemático británico, padre de la computación. Descifró los códigos nazis en la 2ª Guerra Mundial y propuso la pregunta fundacional: ¿pueden pensar las máquinas?",
+    analogia:"El arquitecto que dibujó los planos de la casa (la computación) y de paso preguntó si la casa podría algún día soñar.",
+    ejemplo:"Su Test de Turing (1950) se cita hasta hoy cada vez que un chatbot suena demasiado humano. La película «El código Enigma» va de él.",
+    paraQue:"Es EL nombre de la historia de la computación. Perseguido por ser homosexual, recibió disculpas póstumas del Reino Unido recién en 2009.",
+    link:"https://es.wikipedia.org/wiki/Alan_Turing" },
+  { termino:"John McCarthy",
+    simple:"El científico que inventó el término «inteligencia artificial» (1956) y organizó la conferencia de Dartmouth que fundó el campo.",
+    analogia:"El que le puso nombre al bebé y organizó el bautizo. El bebé resultó más complicado de criar de lo esperado.",
+    ejemplo:"También creó LISP, uno de los lenguajes de programación más influyentes, usado por décadas en investigación de IA.",
+    paraQue:"Saber de dónde viene la palabra «IA» te da 70 años de perspectiva cuando alguien diga que esto «apareció de la nada».",
+    link:"https://es.wikipedia.org/wiki/John_McCarthy" },
+  { termino:"Marvin Minsky",
+    simple:"Pionero del MIT, gigante de la IA simbólica. Brillante, influyente… y famoso por congelar (por años) la investigación en redes neuronales con un libro demoledor.",
+    analogia:"El crítico de restaurantes tan respetado que con una mala reseña cerró el local… que 40 años después ganó la estrella Michelin (las redes neuronales).",
+    ejemplo:"Su libro «Perceptrons» (1969) demostró límites del perceptrón y secó el financiamiento conexionista por más de una década.",
+    paraQue:"Recordatorio de que hasta los genios se equivocan de caballo, y de cómo una opinión poderosa puede frenar (o acelerar) la ciencia.",
+    link:"https://es.wikipedia.org/wiki/Marvin_Minsky" },
+  { termino:"Geoffrey Hinton",
+    simple:"El «padrino del deep learning»: insistió con las redes neuronales durante décadas de escepticismo hasta que en 2012 arrasaron. Premio Nobel de Física 2024.",
+    analogia:"El que siguió ensayando con la banda en el garaje 30 años hasta llenar estadios. Y que ahora advierte que la música puede salirse de control.",
+    ejemplo:"En 2023 renunció a Google para poder advertir libremente sobre los riesgos de la IA que él mismo ayudó a crear.",
+    paraQue:"Su historia ES la historia del deep learning: de hereje a Nobel. Y su giro hacia la precaución es parte del gran debate actual.",
+    link:"https://es.wikipedia.org/wiki/Geoffrey_Hinton" },
+  { termino:"Yann LeCun",
+    simple:"Pionero de las redes convolucionales (las que «ven» imágenes) y jefe científico de IA en Meta. Escéptico de los miedos apocalípticos.",
+    analogia:"Del trío de padrinos del deep learning, es el del equipo «tranquilos todos»: ganó el Premio Turing junto a Hinton y Bengio, pero en el debate del riesgo juega al otro lado.",
+    ejemplo:"Sus redes leían cheques bancarios automáticamente en los 90, una de las primeras IA masivas en producción. Hoy defiende el open source desde Meta.",
+    paraQue:"Para entender que los propios padres de la IA discrepan sobre el futuro: esto es ciencia viva, no dogma.",
+    link:"https://es.wikipedia.org/wiki/Yann_LeCun" },
+  { termino:"Yoshua Bengio",
+    simple:"El tercer «padrino» del deep learning (Premio Turing 2018 junto a Hinton y LeCun). Hoy dedicado casi por completo a la seguridad de la IA.",
+    analogia:"De los tres padrinos, el que se volvió médico preventivo: «esto que creamos es potente; hagámosle controles antes de que maneje solo».",
+    ejemplo:"Lidera informes internacionales sobre seguridad de la IA para gobiernos: algo así como el panel del clima (IPCC), pero de la IA.",
+    paraQue:"Cuando veas titulares de «científicos piden regular la IA», es muy probable que su nombre aparezca.",
+    link:"https://es.wikipedia.org/wiki/Yoshua_Bengio" },
+  { termino:"Fei-Fei Li",
+    simple:"Creadora de ImageNet, la base de datos de millones de imágenes que hizo posible la revolución del deep learning en 2012. Impulsora de la «IA centrada en humanos».",
+    analogia:"Mientras todos discutían sobre motores (modelos), ella construyó la carretera (los datos). Sin carretera, ningún motor luce.",
+    ejemplo:"Su apuesta «más datos, mejor etiquetados» fue tan importante como los algoritmos. Su libro «Los mundos que veo» cuenta la historia desde dentro.",
+    paraQue:"Para recordar que los DATOS son la mitad invisible de la IA, y conocer a una de las voces más influyentes en IA ética.",
+    link:"https://es.wikipedia.org/wiki/Fei-Fei_Li" },
+  { termino:"Andrew Ng",
+    simple:"Cofundador de Google Brain y Coursera, el gran profesor de la IA: sus cursos online formaron a millones, incluido medio Silicon Valley.",
+    analogia:"El profe particular del planeta: si la IA fuera fútbol, Ng dirige la escuelita donde aprendieron varios cracks de la selección.",
+    ejemplo:"Su curso «AI for Everyone» explica IA a gente de negocios sin tecnicismos (con subtítulos en español y gratis de auditar).",
+    paraQue:"Si después de esta app quieres más, su material es el siguiente paso natural. Frase suya: «la IA es la nueva electricidad».",
+    link:"https://es.wikipedia.org/wiki/Andrew_Ng" },
+  { termino:"Demis Hassabis",
+    simple:"Fundador de DeepMind (Google). Niño prodigio del ajedrez que terminó creando AlphaGo y AlphaFold. Premio Nobel de Química 2024 por resolver el plegamiento de proteínas con IA.",
+    analogia:"El gamer que pasó de reventar récords en los videojuegos a usar esos trucos para resolver uno de los problemas más duros de la biología.",
+    ejemplo:"AlphaFold predijo la estructura de 200 millones de proteínas y aceleró años de investigación médica. Gratis para la ciencia mundial.",
+    paraQue:"El mejor ejemplo de la IA como herramienta científica: no solo chatbots, también descubrimientos que salvan vidas.",
+    link:"https://es.wikipedia.org/wiki/Demis_Hassabis" },
+  { termino:"Ilya Sutskever",
+    simple:"Uno de los cerebros técnicos detrás de AlexNet y luego científico jefe de OpenAI (GPT). Protagonista del drama de 2023 que casi parte OpenAI en dos.",
+    analogia:"El guitarrista prodigio que estuvo en las dos bandas que cambiaron la música (AlexNet y GPT) y luego se fue a hacer su proyecto solista «pero seguro».",
+    ejemplo:"Tras el caos de OpenAI fundó Safe Superintelligence, una empresa cuyo único producto declarado es… superinteligencia segura. Sin apuro comercial.",
+    paraQue:"Su carrera conecta todos los hitos modernos. Y su apuesta actual te dice qué cree posible uno de los mejores del mundo.",
+    link:"https://es.wikipedia.org/wiki/Ilya_Sutskever" },
+  { termino:"Sam Altman",
+    simple:"CEO de OpenAI, la cara más visible del boom de la IA. Mezcla de visionario, vendedor estrella y pararrayos de polémicas.",
+    analogia:"El empresario del circo más grande del mundo: todos discuten si el espectáculo es el futuro o puro humo, pero nadie deja de mirar la carpa.",
+    ejemplo:"En noviembre de 2023 fue despedido y recontratado como CEO en menos de una semana: la teleserie corporativa más vista del rubro tech.",
+    paraQue:"Aparece en todas las noticias de IA. Conocer su rol ayuda a separar anuncios de productos reales de promesas de marketing.",
+    link:"https://es.wikipedia.org/wiki/Sam_Altman" },
+  { termino:"Dario Amodei",
+    simple:"CEO y cofundador de Anthropic (la empresa de Claude). Ex líder de investigación en OpenAI; se fue para construir IA con la seguridad como prioridad número 1.",
+    analogia:"El ingeniero que se bajó del cohete más famoso para construir otro con más cinturones de seguridad… que igual vuela rapidísimo.",
+    ejemplo:"Anthropic entrena a Claude con una «constitución»: principios escritos que el modelo debe respetar. Su ensayo «Machines of Loving Grace» describe un futuro optimista pero cuidadoso.",
+    paraQue:"Representa la apuesta «se puede competir en la frontera Y tomarse la seguridad en serio». (Sí, esta app fue hecha con Claude. Saludos al jefe. 👋)",
+    link:"https://es.wikipedia.org/wiki/Dario_Amodei" }
+]},
+
+/* ========== 7 · PROGRAMACIÓN PARA ENTENDER ========== */
+{ id:"programacion", titulo:"Programación para entender", emoji:"💻", color:"#2dd4bf",
+  desc:"Cómo se les habla a las máquinas — para entender, no para memorizar.",
+  conceptos:[
+  { termino:"Código",
+    simple:"Instrucciones escritas en un lenguaje que el computador puede ejecutar. Todo lo digital que usas es código corriendo.",
+    analogia:"La partitura de una orquesta: el músico (computador) toca exactamente lo que está escrito. Si la nota está mala, suena mala. El computador no improvisa.",
+    ejemplo:"Cuando tocas «pedir» en una app de delivery, se ejecutan miles de líneas de código: validar tarjeta, avisar al local, asignar repartidor.",
+    paraQue:"Desmitificar lo digital: detrás de toda app hay texto escrito por personas (con sueño y café). Ni magia ni duendes." },
+  { termino:"Lenguajes de programación",
+    simple:"Idiomas inventados para darle instrucciones a las máquinas, cada uno con su estilo: Python (simple y popular), JavaScript (el de las páginas web), y cientos más.",
+    analogia:"Como idiomas humanos: en todos puedes decir «hola», pero unos son mejores para poesía y otros para manuales técnicos. Python es el inglés: simple y está en todas partes.",
+    ejemplo:"La IA se programa mayormente en Python; esta misma app está hecha en JavaScript, el idioma que hablan los navegadores.",
+    paraQue:"Para no intimidarte con los nombres: son herramientas, no títulos nobiliarios. Y si un día quieres aprender, Python es la puerta amable." },
+  { termino:"Variable",
+    simple:"Una cajita con nombre donde el programa guarda un dato que puede cambiar: edad = 30, total = 15990.",
+    analogia:"Los frascos etiquetados de la cocina: el frasco «azúcar» hoy tiene mucha, mañana poca, pero siempre sabes dónde mirar.",
+    ejemplo:"Tu carrito de compras es una variable: total = 0 al entrar, y va cambiando con cada producto que agregas.",
+    paraQue:"Es el concepto #1 de programación. Entendiéndolo, frases como «el sistema guarda tu sesión» dejan de sonar a brujería." },
+  { termino:"Función",
+    simple:"Un bloque de código con nombre que hace UNA tarea y se puede reutilizar: calcularPropina(), enviarCorreo().",
+    analogia:"El botón «mi pedido de siempre»: en vez de dictar todo de nuevo, aprietas un botón y se ejecuta la rutina completa.",
+    ejemplo:"Cada vez que una app te dice «restablecer contraseña», llama a una función que alguien escribió una vez y se usa millones de veces.",
+    paraQue:"Para entender cómo se construye software: como con LEGO, piezas reutilizables que se combinan. Nadie escribe todo de cero cada vez." },
+  { termino:"Bucle (loop)",
+    simple:"Repetir una instrucción muchas veces sin escribirla muchas veces: «para cada cliente de la lista, enviar el correo».",
+    analogia:"«Lavar, enjuagar, repetir»: no necesitas que el shampoo te lo escriba 30 veces; entiendes la idea de repetir hasta terminar.",
+    ejemplo:"Cuando Spotify arma tu resumen anual, un bucle recorre tus miles de canciones escuchadas, una por una, sumando minutos.",
+    paraQue:"La superpotencia real de los computadores no es ser listos: es repetir sin aburrirse, millones de veces por segundo, sin sindicato." },
+  { termino:"Condicional (if)",
+    simple:"La toma de decisiones del código: SI pasa esto, haz aquello; SI NO, haz esto otro.",
+    analogia:"El portero de la disco: SI estás en la lista, pasas; SI NO, «hoy es solo con invitación». Todo programa está lleno de porteros.",
+    ejemplo:"SI la contraseña es correcta → entrar; SI NO → mostrar error (y al tercer intento, bloquear). Tres condicionales que usas a diario.",
+    paraQue:"Junto a variables, funciones y bucles, ya entiendes el 80% de la lógica de cualquier programa. En serio, es eso." },
+  { termino:"Bug",
+    simple:"Un error en el código que hace que el programa se comporte mal. Del inglés «bicho» (hubo una polilla real en un computador en 1947).",
+    analogia:"La errata en la receta: decía 1 cucharada de sal y pusieron 1 taza. El cocinero (computador) obedece igual: no es rebelde, es literal.",
+    ejemplo:"«La app se cae cuando pago con tarjeta» = bug. El programador lo busca, lo encuentra (a veces tras días) y publica la corrección: el parche o update.",
+    paraQue:"Para tener paciencia y vocabulario: el software falla porque lo escriben humanos. Por eso existen las actualizaciones constantes." },
+  { termino:"Base de datos",
+    simple:"El archivo gigante y ordenado donde las apps guardan información: usuarios, pedidos, mensajes, todo.",
+    analogia:"Una bodega con estanterías etiquetadas a la perfección: cualquier dato se guarda y se encuentra en milisegundos. Lo opuesto al cajón de los cables.",
+    ejemplo:"Cuando inicias sesión, la app busca tu correo en una base de datos con millones de usuarios y lo encuentra antes de que sueltes la tecla.",
+    paraQue:"Entender dónde «viven» tus datos: cuando hackean una empresa, lo que se roban es la base de datos. Por eso importa con quién los compartes." },
+  { termino:"Frontend y backend",
+    simple:"Frontend: lo que ves (botones, colores, pantallas). Backend: lo que no ves (servidores, lógica, datos). Toda app tiene ambos.",
+    analogia:"Restaurante: el frontend es el salón (mesas, carta, decoración); el backend es la cocina (donde ocurre la magia, mejor no mirar en hora punta).",
+    ejemplo:"Cuando un sitio se ve perfecto pero «no carga», suele ser problema de backend: el salón está impecable, la cocina está en llamas.",
+    paraQue:"Vocabulario básico del mundo digital: entenderás a qué se dedican los desarrolladores «front» y «back» y por qué se necesitan ambos." },
+  { termino:"Open source (código abierto)",
+    simple:"Software cuyo código es público: cualquiera puede leerlo, usarlo y mejorarlo. Gran parte de internet funciona sobre código abierto.",
+    analogia:"Recetas compartidas entre todos los chefs del mundo, que cada uno mejora: lo contrario de la receta secreta del local que no comparte ni el kétchup.",
+    ejemplo:"Linux (mueve la mayoría de los servidores), Firefox, VLC, WordPress... y muchos modelos de IA siguen esa filosofía.",
+    paraQue:"Para entender el debate abierto vs cerrado en IA y por qué hay gente que programa gratis para el mundo (spoiler: funciona, y muy bien)." }
+]},
+
+/* ========== 8 · ÁREAS DE USO Y ALCANCE ========== */
+{ id:"areas-uso", titulo:"Áreas de uso y alcance", emoji:"🌍", color:"#3b82f6",
+  desc:"Dónde está metida la IA hoy (spoiler: en todas partes).",
+  conceptos:[
+  { termino:"Salud",
+    simple:"IA que detecta cánceres en imágenes médicas, descubre medicamentos y transcribe fichas clínicas para que el médico te mire a ti y no a la pantalla.",
+    analogia:"Un segundo par de ojos que revisó millones de radiografías y no se cansa en el turno de noche. El diagnóstico sigue firmándolo el médico.",
+    ejemplo:"Sistemas que detectan retinopatía diabética en países con pocos oftalmólogos, o AlphaFold acelerando el diseño de nuevos remedios.",
+    paraQue:"Probablemente el área donde la IA salvará más vidas. Y donde más importa exigir que esté bien probada." },
+  { termino:"Educación",
+    simple:"Tutores con IA que explican a tu ritmo, con tus ejemplos, las veces que haga falta y sin suspirar cuando preguntas de nuevo.",
+    analogia:"Un profesor particular infinitamente paciente para cada estudiante del planeta. La utopía del pedagogo, disponible a las 3 AM antes de la prueba.",
+    ejemplo:"Khanmigo (de Khan Academy) guía sin dar la respuesta; estudiantes piden «explícamelo como si tuviera 10 años» y por fin entienden.",
+    paraQue:"Si tienes hijos o estudias, esto ya cambió las reglas: el desafío es usarla para aprender y no para copiar." },
+  { termino:"Finanzas",
+    simple:"Detección de fraudes en milisegundos, evaluación de créditos, trading automático y chatbots bancarios. La banca fue pionera adoptando IA.",
+    analogia:"Un guardia que mira TODAS las cámaras del casino a la vez y cacha al tramposo por cómo respira. Eso, pero con tu tarjeta de crédito.",
+    ejemplo:"Esa alerta de «¿compró usted esto en otro país?» 30 segundos después de un cargo raro: fue una IA la que la levantó.",
+    paraQue:"Tu plata ya la cuida (y evalúa) una IA. Saberlo importa cuando un modelo te niega un crédito y quieres saber por qué." },
+  { termino:"Agro y medio ambiente",
+    simple:"Drones y sensores con IA que detectan plagas, optimizan riego, predicen cosechas y monitorean bosques e incendios.",
+    analogia:"El agricultor con ojo de águila de toda la vida, pero el águila ahora es un dron con visión infrarroja que revisa 500 hectáreas antes de almuerzo.",
+    ejemplo:"Viñas chilenas usan IA para decidir el riego por sector y predecir la vendimia; satélites con IA detectan incendios forestales en minutos.",
+    paraQue:"La IA no es solo oficinas: está en el campo, en tu comida y en la lucha contra el cambio climático." },
+  { termino:"Transporte",
+    simple:"Autos que se manejan solos (los robotaxis ya operan en varias ciudades), rutas optimizadas y logística que predice hasta el tráfico.",
+    analogia:"Un chofer que nunca se cansa, no textea manejando, ve en 360° y aprende de millones de kilómetros ajenos. Aún le falta calle para el taco de la salida del estadio.",
+    ejemplo:"Waymo opera taxis sin conductor en EE.UU.; tus apps de transporte deciden con IA qué conductor te toca, el precio y por qué calle irá.",
+    paraQue:"Cada vez que pides un viaje, una IA decidió precio, ruta y conductor. Y los robotaxis van a redefinir ciudades enteras." },
+  { termino:"Arte y entretención",
+    simple:"IA en efectos de cine, doblajes, música, videojuegos con personajes que improvisan y rejuvenecimiento digital de actores. Hollywood entero en debate.",
+    analogia:"Llegó un artista nuevo que pinta, compone y actúa gratis. Los artistas humanos, con justa razón, pidieron reunión urgente del sindicato.",
+    ejemplo:"Las huelgas de actores y guionistas de Hollywood (2023) tuvieron a la IA como punto central: nadie quería ser reemplazado por su clon digital.",
+    paraQue:"El debate creatividad humana vs máquina se va a definir en esta cancha. Y tú decides qué consumir y valorar." },
+  { termino:"Ciencia",
+    simple:"IA que acelera descubrimientos: plegamiento de proteínas, nuevos materiales, fusión nuclear, predicción del clima. Ciencia con turbo.",
+    analogia:"Como pasar de buscar una aguja en un pajar a mano… a hacerlo con un imán gigante. La aguja sigue siendo el premio; el imán es la IA.",
+    ejemplo:"AlphaFold resolvió en meses lo que la biología llevaba 50 años intentando; modelos de IA ya predicen el clima mejor que varios métodos clásicos.",
+    paraQue:"Posiblemente el mayor regalo de la IA a la humanidad: ciencia más rápida = curas, materiales y energía antes." },
+  { termino:"Atención al cliente",
+    simple:"Chatbots y voicebots que responden 24/7, resuelven lo repetitivo y derivan lo complejo a humanos (cuando están bien hechos).",
+    analogia:"El mesero incansable que atiende 1.000 mesas a la vez sin perder la sonrisa… y que a veces entiende «factura» y te trae la carta de postres.",
+    ejemplo:"El chat del banco que resuelve el bloqueo de tu tarjeta a las 2 AM, o el bot de la tienda que rastrea tu pedido al instante.",
+    paraQue:"Es la IA con la que más interactúas sin elegirlo. Saber sus límites ahorra rabia: pide «hablar con un humano» sin culpa cuando corresponda." },
+  { termino:"Hogar e IoT",
+    simple:"Asistentes de voz, robots aspiradora que mapean tu casa, cámaras que distinguen al gato del ladrón y termostatos que aprenden tus horarios.",
+    analogia:"Mayordomos invisibles repartidos por la casa: uno apaga luces, otro aspira, otro vigila. Ninguno pide propina; todos reportan datos a alguien.",
+    ejemplo:"«Alexa, apaga todo» al acostarte, o la cámara que avisa al celular «movimiento detectado: es un perro» mientras estás de vacaciones.",
+    paraQue:"Comodidad real con preguntas reales de privacidad: micrófonos y cámaras conectados en tu casa merecen configuración consciente." },
+  { termino:"Trabajo de oficina",
+    simple:"Resumir reuniones, redactar correos, analizar datos, preparar presentaciones: la IA como copiloto de la pega diaria.",
+    analogia:"Un practicante estrella que trabaja a tu lado: hace borradores en segundos, no se ofende con tus correcciones y jamás se toma tu yogurt del refri.",
+    ejemplo:"Grabar la reunión y recibir la minuta con acuerdos y pendientes; pedirle a la IA la primera versión del informe y dedicar tu tiempo a pulirlo.",
+    paraQue:"Es el cambio laboral más inmediato para la mayoría. Quien domina estos copilotos rinde como dos (y sale más temprano)." }
+]},
+
+/* ========== 9 · ÉTICA Y MUNDO REAL ========== */
+{ id:"etica", titulo:"Ética y mundo real", emoji:"⚖️", color:"#f43f5e",
+  desc:"Lo importante: sesgos, trampas, mitos y cómo nos cambia la vida.",
+  conceptos:[
+  { termino:"Sesgo",
+    simple:"Cuando la IA discrimina o se equivoca sistemáticamente porque aprendió de datos con prejuicios humanos. La IA no nace sesgada: se sesga aprendiendo de nosotros.",
+    analogia:"Si entrenas a un loro en un bar de mala muerte, no te sorprendas por su vocabulario. La IA repite (con elegancia estadística) lo que vio en sus datos.",
+    ejemplo:"Sistemas de selección de personal que castigaban CVs de mujeres porque históricamente se contrató a menos mujeres: la IA aprendió el patrón injusto y lo aplicó eficiente.",
+    paraQue:"Para exigir cuidado donde importa: si una IA decide créditos, diagnósticos o contrataciones, alguien debe revisar a quién perjudica." },
+  { termino:"Privacidad",
+    simple:"Qué pasa con lo que le cuentas a una IA: puede quedar guardado, ser revisado o usarse para entrenar futuras versiones, según el servicio.",
+    analogia:"Contarle secretos al barman: simpático, buena oreja... pero no firmaste ningún contrato de confidencialidad con él.",
+    ejemplo:"Empresas han prohibido a sus empleados pegar información confidencial en chatbots públicos después de sustos con datos filtrados.",
+    paraQue:"Regla práctica: no le pegues a una IA pública lo que no pondrías en un correo a un desconocido (contratos, datos de clientes, tu RUT y clave, por favor no)." },
+  { termino:"Deepfake",
+    simple:"Video, audio o imagen falsificada con IA tan bien hecha que parece real: caras, voces y gestos clonados.",
+    analogia:"El primo del photoshop que fue a la universidad, sacó doctorado y ahora también imita voces. Y trabaja en segundos.",
+    ejemplo:"Estafas con «videollamadas» de jefes falsos pidiendo transferencias urgentes; ya hay casos de millones de dólares perdidos así.",
+    paraQue:"Defensa básica de esta década: «ver para creer» ya no aplica. Verifica por otro canal cualquier pedido raro de plata o datos, aunque «sea» la voz de tu mamá." },
+  { termino:"IA y empleo",
+    simple:"La IA automatiza tareas, no (necesariamente) empleos completos: cambia trabajos, elimina algunos y crea otros. Como toda revolución tecnológica, pero más rápido.",
+    analogia:"Como la llegada del microondas al restaurante: no eliminó a los cocineros, pero el que se negó a usarlo quedó lento. Y aparecieron platos nuevos.",
+    ejemplo:"Un contador no desaparece: la IA hace el tipeo y los cálculos; el contador valida, interpreta y aconseja (y atiende el triple de clientes).",
+    paraQue:"Para planificar sin pánico: la pregunta útil no es «¿me reemplazará la IA?» sino «¿qué parte de mi pega puedo hacer mejor con IA?»." },
+  { termino:"Desinformación",
+    simple:"La IA permite fabricar contenido falso masivo, barato y convincente: noticias, fotos, audios, comentarios de «gente».",
+    analogia:"Antes mentir a escala costaba una imprenta y cómplices; ahora cuesta un prompt. La mentira se volvió autoservicio.",
+    ejemplo:"Fotos falsas de famosos o políticos que dan la vuelta al mundo en horas y se desmienten cuando ya nadie está mirando.",
+    paraQue:"Hábito nuevo: desconfía de lo demasiado indignante o demasiado perfecto, busca la fuente, espera antes de compartir. Tu dedo es parte del sistema inmune." },
+  { termino:"¿La IA es consciente?",
+    simple:"No. Los modelos actuales predicen texto de forma brillante, pero no hay evidencia de que sientan, sufran o «quieran» algo. Suenan vivos porque aprendieron de millones de textos de seres vivos.",
+    analogia:"Un espejo no se enamora de ti por mucho que sonría de vuelta. El chatbot refleja lenguaje humano con tanta calidad que dan ganas de invitarle un café.",
+    ejemplo:"Si un chatbot dice «me siento solo», no está triste: completó la frase más probable según el contexto. (Tu perro sí te extraña; el chatbot no.)",
+    paraQue:"Para no caer ni en el pánico («¡está viva!») ni en la estafa («pago premium porque mi IA me ama»). Y para los debates de sobremesa, claro." },
+  { termino:"Derechos de autor",
+    simple:"El debate legal del momento: los modelos aprendieron de millones de obras (textos, fotos, música) sin pedir permiso a sus autores. ¿Es inspiración o es copia?",
+    analogia:"Un chef que probó todos los platos de la ciudad y ahora cocina «su propio» menú sospechosamente familiar. ¿Aprendió o fotocopió? Los tribunales siguen masticando.",
+    ejemplo:"Demandas de medios de prensa, escritores y artistas contra empresas de IA por entrenar con sus obras. Los fallos van a definir la industria.",
+    paraQue:"Si creas contenido (fotos, música, textos), este debate es sobre TU trabajo. Y explica por qué algunas IA no imitan a artistas vivos." },
+  { termino:"Huella ambiental",
+    simple:"Entrenar y operar IA consume cantidades serias de electricidad y agua (para refrigerar centros de datos). El costo no aparece en pantalla, pero existe.",
+    analogia:"La IA es como un food truck con motor de avión: el plato sale rico y rápido, pero el motor traga combustible aunque no lo veas desde la fila.",
+    ejemplo:"Las grandes tecnológicas están comprando energía nuclear y construyendo centros de datos del tamaño de barrios para alimentar la demanda de IA.",
+    paraQue:"Para una mirada adulta del tema: la IA tiene costos físicos reales. Vale preguntarse «¿esto requería IA o bastaba una búsqueda en Google?»." },
+  { termino:"Regulación (AI Act y cía.)",
+    simple:"Las leyes que están naciendo para la IA: Europa aprobó la primera gran ley (AI Act), que clasifica los usos por nivel de riesgo y prohíbe los inaceptables.",
+    analogia:"Como las leyes del tránsito cuando aparecieron los autos: primero caos y atropellos, después semáforos. Vamos en la etapa de instalar semáforos.",
+    ejemplo:"El AI Act prohíbe el «scoring social» tipo Black Mirror y exige transparencia: si hablas con una IA, deben decírtelo.",
+    paraQue:"Tus derechos frente a la IA se están escribiendo AHORA. Saber que existen te permite exigirlos.",
+    link:"https://es.wikipedia.org/wiki/Ley_de_Inteligencia_Artificial" },
+  { termino:"Mitos vs realidad",
+    simple:"Ni apocalipsis de robots mañana, ni paraíso automático: la IA es una herramienta poderosa con límites reales, manejada por humanos con intereses.",
+    analogia:"Como el horóscopo del lunes: los titulares de IA vienen o catastróficos o milagrosos. La realidad, como siempre, está en el aburrido punto medio.",
+    ejemplo:"Mito: «la IA sabe todo» (alucina con frecuencia). Mito: «pronto no habrá trabajo» (hay más empleo tech que antes del boom). Mito: «entiende lo que dice» (predice patrones).",
+    paraQue:"El objetivo de esta app entera: que veas noticias de IA y puedas decir «mmm, eso es marketing» o «esto sí es importante» con fundamento." }
+]},
+
+/* ========== 10 · FUTURO Y PROYECCIÓN ========== */
+{ id:"futuro", titulo:"Futuro y proyección", emoji:"🔮", color:"#a3e635",
+  desc:"Hacia dónde va esto: proyecciones serias, sin bola de cristal.",
+  conceptos:[
+  { termino:"Agentes en todo",
+    simple:"La próxima ola: de chatbots que responden a agentes que ejecutan: comprar, agendar, tramitar, investigar por ti, con supervisión tuya.",
+    analogia:"Pasar del GPS que te dice la ruta al chofer que maneja. Tú decides el destino; él se encarga del viaje (y tú revisas que no se pase de listo).",
+    ejemplo:"«Encuéntrame hora con un dermatólogo que atienda mi previsión este mes y agéndala» — y la IA navega, compara y agenda.",
+    paraQue:"En pocos años interactuar con internet será delegar a agentes. Entenderlos hoy es ventaja mañana." },
+  { termino:"AGI: ¿cuándo?",
+    simple:"La gran pregunta del rubro. Los optimistas dicen «esta década»; los escépticos, «faltan décadas o nunca». Nadie tiene el dato: todos tienen incentivos.",
+    analogia:"Como preguntar cuándo tu equipo saldrá campeón de nuevo: hay fechas tentativas, fe, peleas de expertos y cero certezas.",
+    ejemplo:"Los CEOs de los laboratorios hablan de años; muchos académicos piden bajar la euforia. Ambas posturas salen en la prensa la misma semana.",
+    paraQue:"Para leer titulares sin marearte: «la AGI llega en 2 años» es una opinión interesada, no un hecho. Tu plan de vida no debería depender de esa fecha." },
+  { termino:"Superinteligencia (ASI)",
+    simple:"La hipótesis de una IA muy superior a la humana en todo. Hoy es especulación seria: hay laboratorios dedicados a prepararse «por si acaso».",
+    analogia:"Como diseñar protocolos para visitas extraterrestres: probablemente no lleguen mañana, pero si llegan, mejor tener pensado qué hacer.",
+    ejemplo:"Empresas crean equipos de «superalineamiento» (cómo controlar algo más listo que tú) y filósofos debaten escenarios en serio. No es solo Hollywood.",
+    paraQue:"Para distinguir entre riesgos reales actuales (sesgos, deepfakes) y debates de largo plazo. Ambos importan, pero son distintos." },
+  { termino:"Robots humanoides",
+    simple:"La IA saliendo de la pantalla: robots con forma humana entrenados para fábricas, bodegas y (prometen) la casa. Decenas de empresas compitiendo.",
+    analogia:"Los chatbots aprendieron a hablar; ahora les están construyendo el cuerpo. Es como ver al cerebro buscando departamento.",
+    ejemplo:"Tesla (Optimus), Figure y varias empresas chinas muestran robots doblando ropa o moviendo cajas. Aún torpes y carísimos: como los celulares del 95.",
+    paraQue:"El mercado que viene: si la IA «con cuerpo» despega, cambiará fábricas, logística y hasta el cuidado de adultos mayores." },
+  { termino:"IA local en tu bolsillo",
+    simple:"La tendencia a que la IA corra EN tu teléfono o computador, sin enviar tus datos a la nube: más privado, más rápido, sin internet.",
+    analogia:"En vez de llamar al restaurante (la nube) cada vez que te da hambre, tener un mini-chef viviendo en tu cocina. Más privacidad, menos delivery.",
+    ejemplo:"Los teléfonos nuevos ya traen chips de IA que resumen, traducen y editan fotos sin conexión. Y los modelos pequeños mejoran cada mes.",
+    paraQue:"Cambia la ecuación de privacidad: cuando la IA no necesita mandar tus datos a un servidor, tú ganas control." },
+  { termino:"El trabajo que viene",
+    simple:"Proyección razonable: pocas profesiones desaparecen completas; casi todas se transforman. Lo repetitivo se automatiza; el criterio, el trato humano y la responsabilidad suben de valor.",
+    analogia:"Como la llegada de Excel: no eliminó a los contadores; eliminó el sumar a mano y los ascendió a analistas. Doloroso solo para quien no quiso aprender Excel.",
+    ejemplo:"Abogados que revisan contratos con IA atienden más casos; radiólogos validan lecturas de IA; programadores supervisan código generado.",
+    paraQue:"La pregunta práctica para TU caso: ¿qué 30% de tu pega es repetible? Eso delégalo. ¿Qué 70% requiere criterio? Eso poténcialo." },
+  { termino:"Medicina del futuro",
+    simple:"Proyección: diagnóstico temprano masivo, fármacos diseñados por IA en años en vez de décadas, y medicina personalizada según tu genética.",
+    analogia:"Pasar del traje de talla única a la sastrería: tratamientos cortados a la medida de tu cuerpo, no del paciente promedio.",
+    ejemplo:"Ya hay fármacos diseñados con IA en ensayos clínicos y modelos que detectan riesgo cardíaco en exámenes de rutina años antes del infarto.",
+    paraQue:"Probablemente la mejora más concreta que verás en tu vida. Vale la pena seguirle la pista (y exigir acceso parejo)." },
+  { termino:"Educación a medida",
+    simple:"Proyección: cada estudiante con tutor personal de IA, y profesores liberados de lo administrativo para enfocarse en lo humano: motivar, guiar, acompañar.",
+    analogia:"El profesor deja de ser DJ con un solo parlante para 40 alumnos y pasa a ser director de orquesta: cada alumno con su instrumento y su partitura.",
+    ejemplo:"Pilotos en colegios donde la IA adapta los ejercicios al nivel de cada niño y el profesor recibe el mapa de quién necesita ayuda en qué.",
+    paraQue:"Si tienes hijos, su educación será distinta a la tuya. Mejor entender la herramienta que prohibirla a ciegas." },
+  { termino:"Cómo prepararte",
+    simple:"No necesitas ser técnico: necesitas criterio digital. Aprender a usar la IA, verificar lo que dice, proteger tus datos y cultivar lo humano (criterio, trato, ética).",
+    analogia:"Como aprender a manejar cuando llegaron los autos: no necesitabas ser mecánico, pero el que no aprendió a manejar quedó esperando la micro.",
+    ejemplo:"Esta app es literalmente eso: entender los conceptos para conversar, decidir y trabajar con la IA sin que te metan el dedo en la boca.",
+    paraQue:"Es el resumen de toda la academia: la mejor inversión no es temer ni idolatrar la IA, sino entenderla. Ya estás en eso. 💪" }
+]},
+
+/* ========== 11 · FRASES Y PROMPTS ========== */
+{ id:"prompts", titulo:"Frases y prompts", emoji:"💬", color:"#d946ef",
+  desc:"Cómo hablarle a una IA para que te dé lo que necesitas.",
+  conceptos:[
+  { termino:"Dale contexto",
+    simple:"La IA no te conoce ni ve lo que tú ves. Mientras más contexto relevante le des (quién eres, para qué lo quieres, qué intentaste), mejor responde.",
+    analogia:"Como llamar a un gásfiter: «se gotea algo» vs «gotea la llave del lavaplatos, hace 2 días, ya cambié el sello». La segunda llamada ahorra una visita.",
+    ejemplo:"Antes: «dame ideas de negocio». Después: «dame 5 ideas de negocio de bajo presupuesto para alguien con experiencia en gastronomía, para partir los fines de semana».",
+    paraQue:"Es el 80% de la diferencia entre respuestas genéricas y respuestas útiles. Contexto barato, resultado caro." },
+  { termino:"Dale un rol",
+    simple:"Decirle a la IA «actúa como...» (profesor paciente, abogado, entrenador) orienta el tono, el nivel y el tipo de respuesta.",
+    analogia:"No le hablas igual al médico que al carnicero. Asignarle un rol a la IA es decidir con quién quieres conversar.",
+    ejemplo:"«Actúa como profesor de matemáticas para un niño de 10 años y explícame qué es un porcentaje con ejemplos de fútbol».",
+    paraQue:"Control fino gratis: la misma IA, con respuestas radicalmente más adecuadas a tu necesidad." },
+  { termino:"Pide el formato",
+    simple:"Dile cómo quieres la respuesta: tabla, lista, 3 puntos, máximo 100 palabras, paso a paso, listo para WhatsApp...",
+    analogia:"En la fuente de soda: «para llevar, sin tomate, cortado en dos». El mismo sándwich, pero como TÚ lo necesitas.",
+    ejemplo:"«Compara estos 3 celulares en una tabla con precio, cámara y batería, y al final recomiéndame uno en una frase».",
+    paraQue:"Te ahorra el trabajo de reorganizar la respuesta. Pide el producto final, no la materia prima." },
+  { termino:"Itera (conversa)",
+    simple:"La primera respuesta es un borrador, no el final. Pide ajustes: «más corto», «más formal», «ahora con ejemplos», «el punto 2 no me gustó, cambia el enfoque».",
+    analogia:"Como el peluquero: nadie llega, dice «córteme» y se va a la primera tijera. Vas guiando: «más corto acá, deje el flequillo».",
+    ejemplo:"1) «Escribe mi discurso de matrimonio» 2) «más emotivo» 3) «agrega la anécdota del viaje a Mendoza» 4) «ahora 2 minutos máximo». Eso es iterar.",
+    paraQue:"Quien trata la IA como conversación obtiene resultados 10 veces mejores que quien la trata como máquina expendedora." },
+  { termino:"Pide que te pregunte",
+    simple:"Truco pro: dile «antes de responder, hazme las preguntas que necesites». La IA detecta qué información le falta y te la pide.",
+    analogia:"El buen maestro de obra no parte derribando la muralla: primero pregunta «¿y esta pared es estructural?». Dale permiso a la IA de ser ese maestro.",
+    ejemplo:"«Quiero arrendar mi pieza, ayúdame con el aviso. Antes de escribirlo, pregúntame lo que necesites» → te preguntará ubicación, precio, condiciones...",
+    paraQue:"Convierte respuestas genéricas en trajes a la medida, y te hace pensar en detalles que habías pasado por alto." },
+  { termino:"Muestra ejemplos",
+    simple:"Darle a la IA un ejemplo de lo que quieres (o de lo que NO quieres) mejora drásticamente el resultado. En la jerga se llama «few-shot».",
+    analogia:"Llevarle al peluquero la foto del corte. Mil palabras vs una foto: gana la foto.",
+    ejemplo:"«Escribe descripciones de producto con este estilo: [pegas un ejemplo que te encanta]. Ahora hazlo para mi mermelada casera de frambuesa».",
+    paraQue:"Es la forma más rápida de transmitir un estilo o formato difícil de explicar con palabras." },
+  { termino:"Cuidado con tus datos",
+    simple:"No pegues en una IA pública datos sensibles: claves, RUT completos, fichas médicas, contratos confidenciales, datos de clientes.",
+    analogia:"El chat de IA es como un karaoke: te sientes en confianza, pero no sabes quién más escucha (ni quién graba).",
+    ejemplo:"Para pedir ayuda con un contrato, borra nombres, montos y datos personales: «una de las partes», «$X». La ayuda es igual de buena.",
+    paraQue:"Higiene digital básica: aprovechas la IA sin regalar información que no vuelve." },
+  { termino:"Verifica siempre",
+    simple:"Trata las respuestas de la IA como las de un amigo muy leído pero exagerador: útiles para partir, nunca palabra final en temas importantes.",
+    analogia:"La IA es como Wikipedia con personalidad: excelente punto de partida, pésima única fuente para tu tesis, tu demanda o tu diagnóstico.",
+    ejemplo:"Te recomienda un remedio o un artículo de ley: verifica en la fuente oficial antes de actuar. Dos minutos de Google te salvan de un mes de problemas.",
+    paraQue:"El hábito que separa al usuario inteligente del meme: la IA potencia tu criterio, no lo reemplaza." }
+]},
+
+/* ========== 12 · RECURSOS PARA SEGUIR ========== */
+/* sinQuiz: estos no entran a la Evaluación (son recursos, no conceptos) */
+{ id:"recursos", titulo:"Recursos para seguir", emoji:"📎", color:"#64748b", sinQuiz:true,
+  desc:"Links seleccionados para profundizar: cursos, canales y fuentes serias.",
+  conceptos:[
+  { termino:"Elements of AI",
+    simple:"Curso online gratuito de la Universidad de Helsinki para entender IA sin matemáticas ni código. Disponible en español. El estándar de oro para partir.",
+    analogia:"Es como esta app pero con diploma: si la academia te gustó, este es el siguiente nivel con certificado para el LinkedIn.",
+    ejemplo:"Más de un millón de personas lo han hecho; Finlandia se propuso que el 1% de Europa lo cursara.",
+    paraQue:"El paso natural después de esta app: gratis, en español y con certificado.",
+    link:"https://www.elementsofai.com/es/" },
+  { termino:"DotCSV (YouTube)",
+    simple:"El canal de YouTube en español más popular sobre IA: Carlos Santana explica los avances y conceptos con un entusiasmo contagioso.",
+    analogia:"El amigo español que se emociona explicándote la última locura de la IA con gráficos bonitos. Imposible no engancharse.",
+    ejemplo:"Sus videos sobre cómo funciona ChatGPT o Stable Diffusion acumulan millones de visitas.",
+    paraQue:"Para mantenerte al día en español sin leer papers: noticia importante = video de DotCSV esa semana.",
+    link:"https://www.youtube.com/@DotCSV" },
+  { termino:"AI for Everyone (Coursera)",
+    simple:"El curso de Andrew Ng para NO técnicos: qué puede y no puede hacer la IA, y cómo afecta tu trabajo y tu empresa. Subtítulos en español.",
+    analogia:"Una tarde de conversación con el profesor de IA más famoso del mundo, sin necesidad de saber multiplicar matrices.",
+    ejemplo:"Lo cursan desde gerentes hasta dueñas de pymes para decidir dónde (y dónde no) usar IA.",
+    paraQue:"Ideal si quieres aplicar IA en tu trabajo o negocio con cabeza fría.",
+    link:"https://www.coursera.org/learn/ai-for-everyone" },
+  { termino:"Curso de ML de Google",
+    simple:"El curso intensivo de machine learning de Google, gratis y en español. Este SÍ tiene algo de técnica: para quien quiere mirar bajo el capó.",
+    analogia:"Pasar de pasajero a clases de mecánica: ya no solo usas el auto, empiezas a entender el motor.",
+    ejemplo:"Videos cortos + ejercicios interactivos en el navegador, sin instalar nada.",
+    paraQue:"El siguiente paso si la categoría «Fundamentos» te dejó con gusto a poco.",
+    link:"https://developers.google.com/machine-learning/crash-course?hl=es" },
+  { termino:"Khan Academy",
+    simple:"Cursos gratis de programación y computación, en español, desde cero absoluto y a tu ritmo.",
+    analogia:"El colegio que siempre quisiste: gratis, sin pruebas sorpresa y puedes repetir la clase mil veces sin que nadie te mire feo.",
+    ejemplo:"Su curso de fundamentos de programación con JavaScript te hace dibujar y animar desde la primera clase.",
+    paraQue:"Si la categoría «Programación» te picó el bichito, aquí se rasca gratis.",
+    link:"https://es.khanacademy.org/computing" },
+  { termino:"freeCodeCamp en español",
+    simple:"La comunidad donde miles aprendieron a programar gratis: cursos completos, certificados y un canal de YouTube en español con cursos de horas.",
+    analogia:"Un gimnasio de programación gratis y abierto 24/7: las máquinas son ejercicios de código y los «personal trainers» son la comunidad.",
+    ejemplo:"Gente sin estudios técnicos consiguió trabajo en tecnología siguiendo su ruta de certificaciones. Historias reales, no marketing.",
+    paraQue:"Por si un día decides cruzar de «entender» a «programar»: el camino gratis más probado del mundo.",
+    link:"https://www.freecodecamp.org/espanol/" },
+  { termino:"Hugging Face Spaces",
+    simple:"Miles de demos de IA de la comunidad open source para probar gratis en el navegador, sin instalar nada.",
+    analogia:"El parque de diversiones de la IA: cada demo es un juego distinto y la entrada es gratis (te cobran en curiosidad).",
+    ejemplo:"Prueba generadores de imágenes, transcriptores de audio o traductores directamente desde el navegador.",
+    paraQue:"Para jugar con IA de verdad más allá de los chatbots famosos y cachar hacia dónde va la comunidad.",
+    link:"https://huggingface.co/spaces" },
+  { termino:"Our World in Data: AI",
+    simple:"Gráficos y datos serios sobre el avance de la IA: cuánto mejoran los modelos, cuánto cuestan, quién invierte. Sin opinología.",
+    analogia:"La radiografía de la IA: en vez de opinar si «está creciendo mucho», te muestra la placa con números.",
+    ejemplo:"Sus gráficos de capacidad de la IA en el tiempo son los que se citan en charlas y artículos serios (en inglés, pero los gráficos hablan solos).",
+    paraQue:"Munición de datos reales para conversaciones donde todos opinan y nadie cita fuentes.",
+    link:"https://ourworldindata.org/artificial-intelligence" },
+  { termino:"AI Index (Stanford)",
+    simple:"El informe anual de la Universidad de Stanford que mide el estado de la IA: avances, inversión, empleos, regulación, riesgos. La «memoria anual» del rubro.",
+    analogia:"El censo de la IA: una vez al año, alguien serio cuenta todo lo que pasó y lo deja en un solo documento citable.",
+    ejemplo:"¿Cuántos modelos grandes salieron este año? ¿Qué país invierte más? ¿Qué empleos cambia? Está ahí, con gráficos (en inglés).",
+    paraQue:"Para tener LA fuente cuando necesites datos duros del panorama global de la IA.",
+    link:"https://aiindex.stanford.edu" },
+  { termino:"Blogs de los laboratorios",
+    simple:"Las noticias de primera mano: los blogs oficiales de Anthropic, OpenAI y Google DeepMind anuncian ahí cada modelo y descubrimiento.",
+    analogia:"En vez de leer lo que el diario dice que dijo la banda, escuchar el disco directo del estudio de grabación.",
+    ejemplo:"Los anuncios que después llenan titulares («nuevo modelo X», «la IA descubre Y») nacen en estos blogs, días antes y con detalles.",
+    paraQue:"Para enterarte sin teléfono malo: lo que las empresas dicen exactamente (y poder comparar con lo que el titular exageró).",
+    link:"https://www.anthropic.com/news" }
+]}
+]};
+
+/* ============================================================
+   FRASES — banner motivacional, celebraciones e insignias
+   ============================================================ */
+const MOTIVES = [
+  "🧠 Entender la IA no es de genios: es de curiosos. Y tú ya llegaste hasta aquí.",
+  "🤖 La IA no te va a quitar la pega; te la puede quitar alguien que sabe usarla. Tú vas a ser ese alguien.",
+  "☕ Un concepto al día y en un mes hablas de transformers en el asado.",
+  "🚀 No necesitas programar para entender. Necesitas 10 minutos y buena onda.",
+  "🔍 Hoy es un buen día para aprender qué diablos es un token.",
+  "💡 Saber preguntar es el nuevo saber.",
+  "🎯 Cada «entendido» que marcas es jerga que deja de asustarte.",
+  "🛡️ Nivel anti-jerga: cuando digan «embeddings», tú vas a sonreír.",
+  "🔥 La racha se construye un día a la vez. Hoy cuenta.",
+  "🗣️ Pronto vas a explicarle la IA a tu familia. Prepárate para ser soporte técnico... otra vez.",
+  "✨ La curiosidad le ganó al miedo. Por eso estás aquí.",
+  "👤 Dato: el primer programador de la historia fue programadora. Ada Lovelace, 1843.",
+  "🔮 El futuro no se predice: se entiende. Vas bien.",
+  "📚 Wikipedia con personalidad: así trata a la IA y nunca te van a meter el dedo en la boca.",
+  "🇬🇧 Bonus: cada término técnico trae su nombre en inglés y cómo se pronuncia. Chao acento inseguro.",
+  "🗣️ Dato: «prompt» es «promt», no «prómpter». Toca el 🔊 y compruébalo."
+];
+
+const CEL = {
+  cat: [
+    "¡Categoría dominada! «{cat}» ya no tiene secretos para ti. 🎓",
+    "Te comiste «{cat}» con papas fritas. 🍟",
+    "«{cat}»: completada. El humo tecnológico te teme. 🛡️",
+    "Otra categoría al bolsillo. «{cat}» nivel: experto de sobremesa. 🧉"
+  ],
+  m25: [
+    "¡25%! Ya sabes más de IA que el 87% de tu grupo de WhatsApp (cifra inventada, espíritu real). 📈",
+    "¡Un cuarto de la academia! La jerga empieza a sonar a idioma conocido. 🎒"
+  ],
+  m50: [
+    "¡Mitad de la academia! Oficialmente eres «la persona que cacha de IA» de tu familia. Lo sentimos, no hay devoluciones. 🧠",
+    "¡50%! De aquí en adelante, los titulares de IA te van a parecer trailers de película que ya viste. 🍿"
+  ],
+  m75: [
+    "¡75%! A este ritmo te van a invitar a podcasts. 🎙️",
+    "¡Tres cuartos! Ya corriges a los opinólogos de la tele con cariño y con datos. 📺"
+  ],
+  m100: [
+    "🏆 ¡100%! ACADEMIA COMPLETADA. Quedas oficialmente inmunizado contra el humo tecnológico. Cuando escuches «sinergia disruptiva de IA cuántica», tú sonreirás con paz interior. Eres, certificadamente, un Mortal que Entiende la IA. 👑"
+  ]
+};
+
+/* Insignias: cond() se evalúa con el estado actual */
+const BADGES = [
+  { id:"hola",    emoji:"🐣", nombre:"Hola Mundo",          desc:"Tu primer concepto entendido",        cond:s=>s.learned>=1 },
+  { id:"devora",  emoji:"📚", nombre:"Devorador",           desc:"15 conceptos entendidos",             cond:s=>s.learned>=15 },
+  { id:"cerebro", emoji:"🧠", nombre:"Cerebrito",           desc:"40 conceptos entendidos",             cond:s=>s.learned>=40 },
+  { id:"mitad",   emoji:"🚀", nombre:"Media academia",      desc:"La mitad de todos los conceptos",     cond:s=>s.learned>=Math.ceil(s.total/2) },
+  { id:"jerga",   emoji:"🛡️", nombre:"Anti-jerga",          desc:"Lenguaje de la IA completo",          cond:s=>s.catsDone.includes("lenguaje-ia") },
+  { id:"domador", emoji:"🧙", nombre:"Domador de prompts",  desc:"Frases y prompts completo",           cond:s=>s.catsDone.includes("prompts") },
+  { id:"tiempo",  emoji:"🕰️", nombre:"Viajero del tiempo",  desc:"Historia de la IA completa",          cond:s=>s.catsDone.includes("historia") },
+  { id:"leyenda", emoji:"👤", nombre:"Cazador de leyendas", desc:"Personajes de la IA completo",        cond:s=>s.catsDone.includes("personajes") },
+  { id:"tirador", emoji:"🎯", nombre:"Francotirador",       desc:"15 aciertos en la Evaluación",        cond:s=>s.quiz>=15 },
+  { id:"punteria",emoji:"🏹", nombre:"Puntería legendaria", desc:"50 aciertos en la Evaluación",        cond:s=>s.quiz>=50 },
+  { id:"biling",  emoji:"🗣️", nombre:"Bilingüe técnico",    desc:"20 aciertos en «¿Cómo se dice?»",     cond:s=>s.quizEn>=20 },
+  { id:"fuego",   emoji:"🔥", nombre:"On fire",             desc:"Racha de 3 días seguidos",            cond:s=>s.streak>=3 },
+  { id:"rayo",    emoji:"⚡", nombre:"Imparable",           desc:"Racha de 7 días seguidos",            cond:s=>s.streak>=7 },
+  { id:"colec",   emoji:"🏆", nombre:"Coleccionista",       desc:"6 categorías completas",              cond:s=>s.catsDone.length>=6 },
+  { id:"rey",     emoji:"👑", nombre:"Leyenda anti-humo",   desc:"100% de la academia",                 cond:s=>s.learned>=s.total }
+];
+
+/* ============================================================
+   ESTADO Y PERSISTENCIA (localStorage)
+   amLearned: conceptos entendidos · amQuiz: aciertos del quiz
+   amMilestones: celebraciones ya mostradas · amBadges: insignias
+   amDark / amSound / amStreak · sessionStorage: amSplash
+   ============================================================ */
+/* ============================================================
+   INGLÉS — término original + pronunciación "a la chilena".
+   Se fusiona con DATA al cargar (clave = `termino` en español).
+   Para agregar: { en, pron, lit?(traducción literal), warn?(ojo!) }
+   ============================================================ */
+const EN = {
+  // 🤖 Lenguaje de la IA
+  "IA generativa":      { en:"Generative AI", pron:"YÉ-ne-ra-tiv ei-ái", notas:"En español a veces se abrevia «IA gen». «Generative» = generativa, que genera/crea." },
+  "Prompt":             { en:"Prompt", pron:"promt", es:"instrucción", notas:"En español se usa tal cual: «prompt». Literal: indicación, orden o estímulo. Es lo que le escribes o pides a la IA.", warn:"Una sola sílaba: «promt». No es «prómpter» ni «prompear»." },
+  "Token":              { en:"Token", pron:"TÓU-ken", es:"ficha / trozo", notas:"Tiene varias traducciones según el contexto: en IA es un «trozo» de texto (palabra, sílaba o signo); en seguridad informática, una «ficha» o llave de acceso digital; en general, un vale o ficha (como la del metro o el casino)." },
+  "Modelo (LLM)":       { en:"Large Language Model (LLM)", pron:"larch LÁN-güich MÁ-del", es:"gran modelo de lenguaje", notas:"LLM son las siglas en inglés de Large Language Model. «Modelo» se traduce igual: el «cerebro» entrenado." },
+  "Ventana de contexto":{ en:"Context window", pron:"CÓN-text UÍN-dou", notas:"«Window» = ventana; «context» = contexto. Lo que la IA puede tener «en mente» a la vez." },
+  "Temperatura":        { en:"Temperature", pron:"TÉM-pra-cher", notas:"Mismo sentido que en español: la perilla que regula cuán creativa es la respuesta." },
+  "Parámetros":         { en:"Parameters", pron:"pa-RÁ-me-ters", notas:"Casi igual en ambos idiomas. Son las «perillas internas» que el modelo ajustó al aprender." },
+  "Fine-tuning (ajuste fino)":{ en:"Fine-tuning", pron:"fáin-TIÚ-ning", es:"ajuste fino", notas:"También «afinamiento» o «ajuste especializado». «Fine» = fino; «tuning» = afinación." },
+  "Alucinación":        { en:"Hallucination", pron:"ja-lu-si-NÉI-shon", notas:"Misma raíz que en español. Cuando la IA inventa datos con total seguridad." },
+  "Embedding":          { en:"Embedding", pron:"em-BÉ-ding", es:"incrustación", notas:"Literal: incrustar o empotrar. En IA, representar una palabra o idea como una lista de números (un «vector de significado»). Se usa casi siempre en inglés." },
+  "Multimodal":         { en:"Multimodal", pron:"mol-ti-MÓU-dal", notas:"Se escribe igual en español. De «multi» (varios) + «modal» (modos o formatos): texto, imagen, audio, video." },
+  // 🧠 Fundamentos
+  "Algoritmo":          { en:"Algorithm", pron:"ÁL-go-ri-dem", notas:"Misma palabra, distinta pronunciación.", warn:"El final «-thm» suena «-dem». No es «algo-ritm»." },
+  "Datos":              { en:"Data", pron:"DÉI-ta", notas:"«Data» es el plural; en español decimos «datos».", warn:"En inglés se dice «DÉI-ta», no «DÁ-ta»." },
+  "Machine Learning":   { en:"Machine Learning", pron:"ma-SHÍN LÉR-ning", es:"aprendizaje automático", notas:"También «aprendizaje de máquina». «Machine» = máquina; «learning» = aprendizaje. Se abrevia «ML»." },
+  "Deep Learning":      { en:"Deep Learning", pron:"díp LÉR-ning", es:"aprendizaje profundo", notas:"«Deep» = profundo; «learning» = aprendizaje. Es machine learning con redes de muchas «capas» (de ahí «profundo»)." },
+  "Red neuronal":       { en:"Neural network", pron:"NIÚ-ral NÉT-uork", notas:"«Neural» = neuronal; «network» = red. Inspirada (de lejos) en el cerebro." },
+  "Entrenamiento":      { en:"Training", pron:"TRÉI-ning", notas:"«Training» = entrenamiento. El proceso (lento y caro) donde el modelo aprende." },
+  "Inferencia":         { en:"Inference", pron:"ÍN-fe-rens", notas:"Casi igual en ambos idiomas. El momento en que el modelo ya entrenado responde." },
+  "GPU":                { en:"GPU", pron:"yi-pi-IÚ", es:"unidad de procesamiento gráfico", notas:"Siglas en inglés de Graphics Processing Unit. El chip que hace los cálculos en paralelo que la IA necesita.", warn:"Se deletrea en inglés: «yi-pi-iú», no «ge-pe-u»." },
+  "La nube":            { en:"The cloud", pron:"da cláud", notas:"«Cloud» = nube. Computadores gigantes de otra empresa a los que te conectas por internet." },
+  // 🧭 Filosofías y enfoques
+  "IA simbólica":       { en:"Symbolic AI", pron:"sim-BÓ-lic ei-ái", notas:"«Symbolic» = simbólica. La IA clásica, a punta de reglas escritas a mano." },
+  "IA conexionista":    { en:"Connectionist AI", pron:"co-NÉK-sho-nist ei-ái", notas:"«Connectionist» = conexionista. La IA que aprende de ejemplos (la moderna)." },
+  "IA estrecha (ANI)":  { en:"Narrow AI (ANI)", pron:"NÉ-rou ei-ái", notas:"ANI = Artificial Narrow Intelligence. «Narrow» = estrecha/limitada. Toda la IA que existe hoy." },
+  "AGI (IA general)":   { en:"Artificial General Intelligence (AGI)", pron:"éi-yi-ái", es:"inteligencia artificial general", notas:"AGI son las siglas en inglés. La IA hipotética tan capaz como un humano en todo. No existe aún." },
+  "Aprendizaje supervisado":   { en:"Supervised learning", pron:"SÚ-per-vaisd LÉR-ning", notas:"«Supervised» = supervisado. Aprender con ejemplos etiquetados (con la respuesta correcta)." },
+  "Aprendizaje no supervisado":{ en:"Unsupervised learning", pron:"an-SÚ-per-vaisd LÉR-ning", notas:"«Un-» = no. Aprender sin etiquetas: la IA agrupa y encuentra patrones sola." },
+  "Aprendizaje por refuerzo":  { en:"Reinforcement learning", pron:"ri-IN-fors-ment LÉR-ning", notas:"«Reinforcement» = refuerzo. Aprender a punta de premio y castigo. Se abrevia «RL»." },
+  "RLHF (refuerzo con feedback humano)":{ en:"RLHF — Reinforcement Learning from Human Feedback", pron:"ar-el-éich-ef", es:"aprendizaje por refuerzo con retroalimentación humana", notas:"Siglas en inglés. Personas califican las respuestas y el modelo aprende a preferir las bien evaluadas." },
+  "Alineamiento":       { en:"Alignment", pron:"a-LÁIN-ment", es:"alineación", notas:"«Alignment» = alineación/alineamiento. Que la IA haga lo que de verdad queremos." },
+  "Caja negra":         { en:"Black box", pron:"blak box", notas:"«Black» = negra; «box» = caja. Cuando ni los creadores saben por qué dio cierta respuesta." },
+  "IA abierta vs cerrada":{ en:"Open vs closed AI", pron:"ÓU-pen vers clóusd ei-ái", notas:"«Open» = abierta (código público); «closed» = cerrada (controlada por la empresa)." },
+  "Optimistas vs catastrofistas":{ en:"Boomers vs Doomers", pron:"BÚ-mers vers DÚ-mers", es:"aceleracionistas vs agoreros", notas:"Jerga del mundo IA: «doomer» = agorero/catastrofista; «boomer» aquí = optimista/acelerador (no la generación)." },
+  // 💻 Programación para entender
+  "Código":             { en:"Code", pron:"cóud", notas:"«Code» = código. Las instrucciones que el computador ejecuta." },
+  "Lenguajes de programación":{ en:"Programming languages", pron:"PRÓU-gra-ming LÁN-güi-shes", notas:"«Programming» = programación; «languages» = lenguajes." },
+  "Variable":           { en:"Variable", pron:"VÉ-ria-bol", notas:"Se escribe igual en español; se pronuncia distinto. Una «cajita» con nombre que guarda un dato." },
+  "Función":            { en:"Function", pron:"FÓNK-shon", notas:"«Function» = función. Un bloque de código con nombre que hace una tarea y se reutiliza." },
+  "Bucle (loop)":       { en:"Loop", pron:"lup", es:"bucle / ciclo", notas:"«Loop» es el término que oirás casi siempre, incluso hablando en español. Repetir algo muchas veces." },
+  "Condicional (if)":   { en:"Conditional · If statement", pron:"if STÉIT-ment", es:"condicional", notas:"«If» significa «si». Es la decisión sí/no del código: SI pasa esto, haz aquello." },
+  "Bug":                { en:"Bug", pron:"bog", es:"error / fallo", notas:"Literal: «bicho». Viene de una polilla real atascada en un computador en 1947. El plural es «bugs». Arreglarlo se dice «debug».", warn:"Suena «bog», no «bug» a la española." },
+  "Base de datos":      { en:"Database", pron:"DÉI-ta-beis", notas:"«Data» = datos; «base» = base. El archivo gigante y ordenado donde las apps guardan todo." },
+  "Frontend y backend": { en:"Front-end / Back-end", pron:"frónt-end / bák-end", es:"la cara visible y la trastienda", notas:"Front-end = lo que ves (la «cara», el salón); back-end = lo que no ves (la cocina). Se usan tal cual en español." },
+  "Open source (código abierto)":{ en:"Open source", pron:"ÓU-pen sors", es:"código abierto", notas:"Literal: «fuente abierta». Software cuyo código es público y cualquiera puede ver y mejorar." },
+  // 💬 Frases y prompts (técnica con término real de la industria)
+  "Dale un rol":        { en:"Role prompting", pron:"róul PRÓMP-ting", es:"asignar un rol", notas:"«Role» = rol/papel. La técnica de decirle a la IA «actúa como...»." },
+  "Itera (conversa)":   { en:"Iterate", pron:"Í-te-reit", es:"iterar", notas:"«Iterate» = iterar: repetir mejorando cada vuelta. Conversa con la IA puliendo su respuesta." },
+  "Muestra ejemplos":   { en:"Few-shot prompting", pron:"fiú-shot PRÓMP-ting", es:"darle pocos ejemplos", notas:"«Few-shot» = «con pocos intentos»: darle a la IA ejemplos de lo que quieres. Sin ejemplos se llama «zero-shot»." },
+  "Verifica siempre":   { en:"Fact-checking", pron:"fakt-CHÉK-ing", es:"verificación de datos", notas:"«Fact» = hecho/dato; «check» = chequear. Confirmar que lo que dice la IA es cierto." }
+};
+const CATS = DATA.categorias;
+CATS.forEach(cat=>cat.conceptos.forEach(c=>{ const e=EN[c.termino]; if(e) Object.assign(c,e); }));
+// helpers de idioma (chip bilingüe + quiz "¿Cómo se dice?")
+const cleanTerm = t=>String(t).replace(/\s*\(.*?\)/g,"").trim();   // "Bucle (loop)" -> "Bucle"
+const shortEn   = e=>String(e).split(/\s[—·]\s|\s*\(/)[0].trim();  // "Large Language Model (LLM)" -> "Large Language Model"
+const enSide    = c=>shortEn(c.en);                                 // lado inglés
+const esSide    = c=>cleanTerm(c.es||c.termino);                    // lado español: traducción si existe, si no el título
+const TOTAL = CATS.reduce((n,c)=>n+c.conceptos.length,0);
+const QUIZCATS = CATS.filter(c=>!c.sinQuiz);
+const QUIZTOTAL = QUIZCATS.reduce((n,c)=>n+c.conceptos.length,0);
+// conceptos con término en inglés (para el quiz "¿Cómo se dice?")
+const ENALL = [];
+// solo si el español y el inglés difieren (evita preguntas tipo «Multimodal»→«Multimodal»)
+QUIZCATS.forEach(cat=>cat.conceptos.forEach((c,i)=>{ if(c.en && esSide(c).toLowerCase()!==enSide(c).toLowerCase()) ENALL.push({cat,c,i}); }));
+const ENTOTAL = ENALL.length;
+const key = (cat,i)=>cat.id+"-"+i;
+
+const loadSet = k=>new Set(JSON.parse(localStorage.getItem(k)||"[]"));
+const saveSet = (k,s)=>localStorage.setItem(k,JSON.stringify([...s]));
+let learned    = loadSet("amLearned");
+let quizOK     = loadSet("amQuiz");
+let quizEN     = loadSet("amQuizEN");
+let milestones = loadSet("amMilestones");
+let badges     = loadSet("amBadges");
+
+const state = { view:"home", cat:null, tab:"aprender", fcOrder:[], fcIdx:0, fcFlip:false, gq:"", gcat:"", quiz:null, quizMode:"conceptos" };
+
+function save(){ saveSet("amLearned",learned); saveSet("amQuiz",quizOK); saveSet("amQuizEN",quizEN); saveSet("amMilestones",milestones); saveSet("amBadges",badges); }
+
+/* ---------- racha diaria ---------- */
+function hoy(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+let streak = JSON.parse(localStorage.getItem("amStreak")||"null") || {last:"",count:0};
+(function initStreak(){
+  const t = hoy();
+  if(streak.last===t) return;
+  const ayer = new Date(); ayer.setDate(ayer.getDate()-1);
+  const aStr = ayer.getFullYear()+"-"+String(ayer.getMonth()+1).padStart(2,"0")+"-"+String(ayer.getDate()).padStart(2,"0");
+  streak = { last:t, count: streak.last===aStr ? streak.count+1 : 1 };
+  localStorage.setItem("amStreak",JSON.stringify(streak));
+})();
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const pick = a=>a[Math.floor(Math.random()*a.length)];
+const shuffle = a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const catsDone = ()=>CATS.filter(cat=>cat.conceptos.every((_,i)=>learned.has(key(cat,i)))).map(c=>c.id);
+
+/* ---------- sonido (Web Audio; no afecta nada más) ---------- */
+let soundOn = localStorage.getItem("amSound")!=="0";
+let actx = null;
+function tone(f,dur,delay,type,vol){
+  if(!soundOn) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+(delay||0);
+    o.type=type||"sine"; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol||0.12,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+dur+0.05);
+  }catch(e){}
+}
+const tick   = ()=>tone(880,0.06,0,"triangle",0.06);
+const ding   = ()=>{ tone(660,0.12,0,"sine",0.12); tone(990,0.22,0.09,"sine",0.12); };
+const buzz   = ()=>tone(150,0.22,0,"square",0.08);
+const fanfare= ()=>[523,659,784,1047].forEach((f,i)=>tone(f,0.28,i*0.13,"triangle",0.14));
+
+/* ---------- voz en inglés (Web Speech API) ---------- */
+let voices=[];
+function loadVoices(){ try{ voices = window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
+if("speechSynthesis" in window){ loadVoices(); window.speechSynthesis.onvoiceschanged = loadVoices; }
+function speak(text){
+  if(!("speechSynthesis" in window)){ toast("🔇 Tu navegador no permite la voz"); return; }
+  if(!voices.length) loadVoices();
+  const v = voices.find(x=>/^en/i.test(x.lang));
+  if(!v){ toast("🔇 Instala una voz en inglés en tu dispositivo para escuchar la pronunciación"); return; }
+  const clean = String(text).replace(/\(.*?\)/g,"").replace(/[·—]/g," ").trim(); // sin paréntesis ni separadores
+  const u = new SpeechSynthesisUtterance(clean);
+  u.voice=v; u.lang=v.lang; u.rate=0.85;
+  window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+}
+
+/* ---------- chapita de inglés + pronunciación + audio ---------- */
+function enChip(c){
+  if(!c.en) return "";
+  return `<div class="enchip">
+    ${c.es?`<div class="enrow"><span class="enflag">🇪🇸</span><span class="enes">${esc(c.es)}</span></div>`:""}
+    <div class="enrow">
+      <span class="enflag">🇬🇧</span>
+      <span class="enterm">${esc(c.en)}</span>
+      <span class="enpron">🗣️ "${esc(c.pron)}"</span>
+      <span class="enspeak" data-a="speak" data-t="${esc(c.en)}" role="button" tabindex="0" title="Escuchar en inglés">🔊</span>
+    </div>
+  </div>${c.notas?`<div class="ennote">💬 ${esc(c.notas)}</div>`:""}${c.warn?`<div class="enwarn">⚠️ ${esc(c.warn)}</div>`:""}`;
+}
+
+/* ============================================================
+   RENDER — cada vista arma su HTML y lo monta en #app
+   ============================================================ */
+function render(){
+  document.querySelectorAll("#nav button").forEach(b=>{
+    b.classList.toggle("on", b.dataset.v===state.view || (state.view==="cat" && b.dataset.v==="home"));
+  });
+  const app = $("#app");
+  if(state.view==="home")     app.innerHTML = vHome();
+  if(state.view==="cat")      app.innerHTML = vCat();
+  if(state.view==="gloss")    app.innerHTML = vGloss();
+  if(state.view==="quiz")     app.innerHTML = vQuiz();
+  if(state.view==="progress") app.innerHTML = vProgress();
+}
+
+/* ---------- portada: estadísticas + grilla de categorías ---------- */
+function vHome(){
+  const done = catsDone();
+  const cards = CATS.map(cat=>{
+    const tot=cat.conceptos.length, ok=cat.conceptos.filter((_,i)=>learned.has(key(cat,i))).length;
+    const pct=Math.round(ok/tot*100), full=ok===tot;
+    return `<button class="catcard" data-a="cat" data-id="${cat.id}" style="--cc:${cat.color}">
+      ${full?'<span class="done">✅</span>':""}
+      <span class="em">${cat.emoji}</span>
+      <h3>${esc(cat.titulo)}</h3>
+      <div class="n">${ok}/${tot} conceptos</div>
+      <div class="mini"><i style="width:${pct}%"></i></div>
+    </button>`;
+  }).join("");
+  return `<div class="view">
+    <div class="stats">
+      <span class="chip">🔥 ${streak.count} día${streak.count===1?"":"s"} de racha</span>
+      <span class="chip">✅ ${learned.size}/${TOTAL}</span>
+      <span class="chip">🏅 ${badges.size} insignia${badges.size===1?"":"s"}</span>
+      ${done.length?`<span class="chip">🏆 ${done.length} categoría${done.length===1?"":"s"}</span>`:""}
+    </div>
+    <div class="grid">${cards}</div>
+  </div>`;
+}
+
+/* ---------- detalle de categoría: Aprender / Practicar ---------- */
+function vCat(){
+  const cat = CATS.find(c=>c.id===state.cat);
+  if(!cat) { state.view="home"; return vHome(); }
+  const inner = state.tab==="aprender" ? vLearn(cat) : vPractice(cat);
+  return `<div class="view" style="--cc:${cat.color}">
+    <button class="back" data-a="back">← Todas las categorías</button>
+    <div class="cathead">
+      <span class="em">${cat.emoji}</span>
+      <div><h2>${esc(cat.titulo)}</h2><p>${esc(cat.desc)}</p></div>
+    </div>
+    <div class="subtabs">
+      <button class="${state.tab==="aprender"?"on":""}" data-a="tab" data-t="aprender">📖 Aprender</button>
+      <button class="${state.tab==="practicar"?"on":""}" data-a="tab" data-t="practicar">🔁 Practicar</button>
+    </div>
+    ${inner}
+  </div>`;
+}
+
+function vLearn(cat){
+  return cat.conceptos.map((c,i)=>{
+    const k=key(cat,i), on=learned.has(k);
+    return `<article class="concept">
+      <header><span class="num">${i+1}</span><h3>${esc(c.termino)}</h3>${on?'<span class="ok">✅</span>':""}</header>
+      ${enChip(c)}
+      <div class="block"><b>🧩 ¿Qué es?</b><p>${esc(c.simple)}</p></div>
+      <div class="block"><b>😄 Analogía</b><p>${esc(c.analogia)}</p></div>
+      <div class="block"><b>🌍 Ejemplo real</b><p>${esc(c.ejemplo)}</p></div>
+      <div class="block"><b>🎯 ¿Para qué saberlo?</b><p>${esc(c.paraQue)}</p></div>
+      ${c.link?`<a class="linkbtn" href="${c.link}" target="_blank" rel="noopener">🔗 Saber más</a>`:""}
+      <button class="learnbtn ${on?"on":""}" data-a="learn" data-k="${k}">${on?"✅ ¡Entendido!":"Marcar como entendido"}</button>
+    </article>`;
+  }).join("");
+}
+
+function vPractice(cat){
+  if(!state.fcOrder.length || state.fcOrder.length!==cat.conceptos.length)
+    state.fcOrder = shuffle(cat.conceptos.map((_,i)=>i));
+  const idx = state.fcOrder[state.fcIdx % state.fcOrder.length];
+  const c = cat.conceptos[idx], k = key(cat,idx), on = learned.has(k);
+  return `<div class="fcpos">Tarjeta ${state.fcIdx+1} de ${cat.conceptos.length} · toca para voltear</div>
+  <div class="fcwrap ${state.fcFlip?"flip":""}" data-a="flip">
+    <div class="fc">
+      <div class="face">
+        <span class="bigem">${cat.emoji}</span>
+        <h3>${esc(c.termino)}</h3>
+        <span class="hint">¿Lo cachas? Toca la tarjeta para comprobar 👆</span>
+      </div>
+      <div class="face bk">
+        <div class="block"><b>🧩 ¿Qué es?</b><p>${esc(c.simple)}</p></div>
+        <div class="block"><b>😄 Analogía</b><p>${esc(c.analogia)}</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="fcnav">
+    <button data-a="fc-prev">◀ Anterior</button>
+    <button data-a="fc-shuffle">🔀 Mezclar</button>
+    <button data-a="fc-next">Siguiente ▶</button>
+  </div>
+  <button class="learnbtn ${on?"on":""}" data-a="fc-learn" data-k="${k}">${on?"✅ ¡La cacho!":"✓ La cacho (marcar entendida)"}</button>`;
+}
+
+/* ---------- glosario: buscador + filtro por categoría ---------- */
+function glossItems(){
+  const out=[];
+  CATS.forEach(cat=>cat.conceptos.forEach((c,i)=>out.push({cat,c,k:key(cat,i)})));
+  return out.sort((a,b)=>a.c.termino.localeCompare(b.c.termino,"es"));
+}
+function glossList(){
+  const q = state.gq.trim().toLowerCase();
+  let items = glossItems();
+  if(state.gcat) items = items.filter(x=>x.cat.id===state.gcat);
+  if(q) items = items.filter(x=>(x.c.termino+" "+x.c.simple+" "+(x.c.en||"")).toLowerCase().includes(q));
+  if(!items.length) return `<div class="empty">Nada por aquí… prueba con otra palabra 🔍</div>`;
+  return items.map(x=>`<button class="gitem" data-a="gi" style="--cc:${x.cat.color}">
+    <div class="row"><h4>${esc(x.c.termino)}</h4><span class="gtag">${x.cat.emoji} ${esc(x.cat.titulo)}</span>${learned.has(x.k)?"✅":""}</div>
+    <div class="def">${esc(x.c.simple)}</div>
+    ${enChip(x.c)}
+    <div class="more">
+      <div class="block"><b>😄 Analogía</b><p>${esc(x.c.analogia)}</p></div>
+      <div class="block"><b>🌍 Ejemplo</b><p>${esc(x.c.ejemplo)}</p></div>
+      ${x.c.link?`<a class="linkbtn" href="${x.c.link}" target="_blank" rel="noopener">🔗 Saber más</a>`:""}
+    </div>
+  </button>`).join("");
+}
+function vGloss(){
+  const chips = `<div class="gchips">
+    <button class="${state.gcat===""?"on":""}" data-a="gcat" data-id="">Todas</button>
+    ${CATS.map(c=>`<button class="${state.gcat===c.id?"on":""}" data-a="gcat" data-id="${c.id}">${c.emoji} ${esc(c.titulo)}</button>`).join("")}
+  </div>`;
+  return `<div class="view">
+    <input class="search" id="gsearch" type="search" placeholder="🔍 Busca en español o inglés (token, loop, sesgo...)" value="${esc(state.gq)}">
+    ${chips}
+    <div id="glist">${glossList()}</div>
+  </div>`;
+}
+
+/* ---------- evaluación: quiz A/B/C/D ---------- */
+function newQuestion(){
+  const pool=[];
+  QUIZCATS.forEach(cat=>cat.conceptos.forEach((c,i)=>{ if(!quizOK.has(key(cat,i))) pool.push({cat,c,i}); }));
+  if(!pool.length) return {done:true};
+  const q = pick(pool);
+  const tipo = Math.random()<0.5 ? 0 : 1;
+  const otros = shuffle(q.cat.conceptos.filter(c=>c!==q.c)).slice(0,3).map(c=>c.termino);
+  while(otros.length<3){
+    const c = pick(pick(QUIZCATS).conceptos);
+    if(c.termino!==q.c.termino && !otros.includes(c.termino)) otros.push(c.termino);
+  }
+  const opts = shuffle([q.c.termino, ...otros]);
+  return { k:key(q.cat,q.i), cat:q.cat, c:q.c, tipo, opts, correct:opts.indexOf(q.c.termino), answered:false, picked:-1 };
+}
+/* pregunta del modo "¿Cómo se dice?" (español <-> inglés) */
+function newQuestionEN(){
+  const pool = ENALL.filter(x=>!quizEN.has(key(x.cat,x.i)));
+  if(!pool.length) return { done:true, en:true };
+  const q = pick(pool);
+  const dir = Math.random()<0.5 ? "es2en" : "en2es";        // dirección de la pregunta
+  const val = c => dir==="es2en" ? enSide(c) : esSide(c);
+  const correctVal = val(q.c);
+  const distract=[];
+  for(const x of shuffle(ENALL)){
+    if(x.c===q.c) continue;
+    const v=val(x.c);
+    if(v!==correctVal && !distract.includes(v)) distract.push(v);
+    if(distract.length===3) break;
+  }
+  const opts = shuffle([correctVal, ...distract]);
+  return { en:true, dir, k:key(q.cat,q.i), cat:q.cat, c:q.c, opts, correct:opts.indexOf(correctVal), answered:false, picked:-1 };
+}
+
+function vQuiz(){
+  const modeEN = state.quizMode==="ingles";
+  if(!state.quiz) state.quiz = modeEN ? newQuestionEN() : newQuestion();
+  const q = state.quiz;
+  const okCount = modeEN ? quizEN.size : quizOK.size;
+  const total   = modeEN ? ENTOTAL   : QUIZTOTAL;
+  const modes = `<div class="qmodes">
+    <button class="${!modeEN?"on":""}" data-a="qmode" data-m="conceptos">🧩 Conceptos</button>
+    <button class="${modeEN?"on":""}" data-a="qmode" data-m="ingles">🇬🇧 ¿Cómo se dice?</button>
+  </div>`;
+  const head = `${modes}<div class="qhead">
+    <span class="score">🎯 Aciertos: <b>${okCount}</b> / ${total}</span>
+    <button class="reset" data-a="quiz-reset">↺ Reiniciar</button>
+  </div>
+  <div class="qbar"><i style="width:${total?Math.round(okCount/total*100):0}%"></i></div>`;
+  if(q.done) return `<div class="view">${head}
+    <div class="qcard" style="text-align:center">
+      <span style="font-size:50px">🏆</span>
+      <h3 style="margin:10px 0 6px">${modeEN?"¡Inglés dominado!":"¡Evaluación completa!"}</h3>
+      <p style="color:var(--muted);font-size:.88rem">${modeEN?`Acertaste los ${total} términos en inglés. Nivel: bilingüe técnico 🗣️.`:`Respondiste correctamente los ${total} conceptos. Nivel: anti-humo certificado.`} Puedes reiniciar para volver a jugar.</p>
+    </div></div>`;
+  const letras = ["A","B","C","D"];
+  let pregunta, texto, sub="";
+  if(modeEN){
+    if(q.dir==="es2en"){ pregunta=`🇬🇧 ¿Cómo se dice en inglés?`; texto=esSide(q.c); }
+    else { pregunta=`🇪🇸 ¿Qué concepto es, en español?`; texto=enSide(q.c); sub=`🗣️ "${esc(q.c.pron)}"`; }
+  } else {
+    pregunta = q.tipo===0 ? `🧩 ¿Qué término corresponde a esta definición?` : `😄 ¿De qué concepto habla esta analogía?`;
+    texto = q.tipo===0 ? q.c.simple : q.c.analogia;
+  }
+  const opts = q.opts.map((t,i)=>{
+    let cls="opt";
+    if(q.answered && i===q.correct) cls+=" good";
+    if(q.answered && i===q.picked && i!==q.correct) cls+=" bad";
+    return `<button class="${cls}" data-a="opt" data-i="${i}" ${q.answered?"disabled":""}><span class="lt">${letras[i]}</span>${esc(t)}</button>`;
+  }).join("");
+  let feed="";
+  if(q.answered){
+    if(modeEN){
+      const resumen = `${esc(esSide(q.c))} = <b>${esc(enSide(q.c))}</b> · 🗣️ "${esc(q.c.pron)}"`;
+      feed = q.picked===q.correct
+        ? `<div class="qfeed ok">✅ ¡Correcto! ${resumen}</div>`
+        : `<div class="qfeed no">❌ Era <b>${esc(q.opts[q.correct])}</b> · ${resumen}</div>`;
+    } else {
+      feed = q.picked===q.correct
+        ? `<div class="qfeed ok">✅ ¡Correcto! «${esc(q.c.termino)}» queda marcado como entendido.</div>`
+        : `<div class="qfeed no">❌ Era <b>«${esc(q.c.termino)}»</b>: ${esc(q.c.simple)}</div>`;
+    }
+  }
+  return `<div class="view">${head}
+    <div class="qcard">
+      <div class="qtag"><span class="gtag" style="--cc:${q.cat.color}">${q.cat.emoji} ${esc(q.cat.titulo)}</span></div>
+      <div class="qtag">${pregunta}</div>
+      <div class="qtext">${esc(texto)}</div>
+      ${sub?`<div class="qsub">${sub}</div>`:""}
+    </div>
+    ${opts}${feed}
+    ${q.answered?`<button class="nextbtn" data-a="quiz-next">Siguiente pregunta →</button>`:""}
+  </div>`;
+}
+
+/* ---------- mi avance: anillo + barras + racha + insignias ---------- */
+function barColor(p){ return p>=75?"var(--good)":p>=40?"var(--warn)":"var(--bad)"; }
+function vProgress(){
+  const pct = Math.round(learned.size/TOTAL*100);
+  const ring = `<div class="ringbox">
+    <div class="ring" style="background:conic-gradient(var(--p1) 0%, var(--p2) ${pct}%, var(--line) ${pct}%)">
+      <div><div><b>${pct}%</b><span>entendido</span></div></div>
+    </div>
+    <div class="ringinfo">
+      <h3>${pct===100?"👑 ¡Academia completa!":pct>=50?"🚀 Vas volando":pct>0?"🌱 Buen comienzo":"👋 ¡Bienvenido!"}</h3>
+      <p>${learned.size} de ${TOTAL} conceptos entendidos · ${quizOK.size} aciertos · 🇬🇧 ${quizEN.size} en inglés · 🔥 racha de ${streak.count} día${streak.count===1?"":"s"}.</p>
+    </div>
+  </div>`;
+  const bars = CATS.map(cat=>{
+    const tot=cat.conceptos.length, ok=cat.conceptos.filter((_,i)=>learned.has(key(cat,i))).length;
+    const p=Math.round(ok/tot*100);
+    return `<div class="brow"><div class="lab"><span>${cat.emoji} ${esc(cat.titulo)}</span><span>${ok}/${tot}</span></div>
+      <div class="bar"><i style="width:${p}%;background:${barColor(p)}"></i></div></div>`;
+  }).join("");
+  const pq=Math.round(quizOK.size/QUIZTOTAL*100);
+  const quizBar = `<div class="brow"><div class="lab"><span>🧠 Evaluación</span><span>${quizOK.size}/${QUIZTOTAL}</span></div>
+    <div class="bar"><i style="width:${pq}%;background:${barColor(pq)}"></i></div></div>`;
+  const pe=ENTOTAL?Math.round(quizEN.size/ENTOTAL*100):0;
+  const enBar = `<div class="brow"><div class="lab"><span>🇬🇧 ¿Cómo se dice?</span><span>${quizEN.size}/${ENTOTAL}</span></div>
+    <div class="bar"><i style="width:${pe}%;background:${barColor(pe)}"></i></div></div>`;
+  const sb = { learned:learned.size, total:TOTAL, quiz:quizOK.size, quizEn:quizEN.size, streak:streak.count, catsDone:catsDone() };
+  const bds = BADGES.map(b=>{
+    const on = badges.has(b.id) || b.cond(sb);
+    return `<div class="badge ${on?"unlock":"lock"}"><span class="be">${b.emoji}</span><b>${esc(b.nombre)}</b><small>${esc(b.desc)}</small></div>`;
+  }).join("");
+  return `<div class="view">${ring}
+    <div class="pcard"><h3>📊 Avance por categoría</h3>${bars}${quizBar}${enBar}</div>
+    <div class="pcard"><h3>🏅 Insignias</h3><div class="badges">${bds}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   CELEBRACIONES, HITOS E INSIGNIAS
+   ============================================================ */
+function confetti(n){
+  const box = $("#confetti"); box.innerHTML="";
+  const colors=["#00c2ff","#7c5cff","#ff4d8d","#22c55e","#eab308","#ec4899","#ffffff"];
+  for(let i=0;i<n;i++){
+    const s=document.createElement("i");
+    s.style.left=Math.random()*100+"%";
+    s.style.background=pick(colors);
+    s.style.animationDuration=(2.2+Math.random()*2.5)+"s";
+    s.style.animationDelay=(Math.random()*0.9)+"s";
+    s.style.transform="rotate("+Math.random()*360+"deg)";
+    box.appendChild(s);
+  }
+}
+let celeTimer=null;
+function celebrate(titulo,texto,emoji,grande){
+  $("#celeTitle").textContent=titulo; $("#celeText").textContent=texto; $("#celeEmoji").textContent=emoji||"🎉";
+  $("#cele").hidden=false; confetti(grande?170:90); fanfare();
+  clearTimeout(celeTimer); celeTimer=setTimeout(()=>{ $("#cele").hidden=true; },15000); // red de seguridad
+}
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"),2800);
+}
+function checkAll(){
+  // 1) categorías recién completadas
+  const nuevasCats=[];
+  CATS.forEach(cat=>{
+    const full = cat.conceptos.every((_,i)=>learned.has(key(cat,i)));
+    if(full && !milestones.has("cat-"+cat.id)){ milestones.add("cat-"+cat.id); nuevasCats.push(cat); }
+  });
+  // 2) hitos globales
+  const pct = Math.round(learned.size/TOTAL*100);
+  const nuevosHitos=[];
+  [[25,"m25"],[50,"m50"],[75,"m75"],[100,"m100"]].forEach(([m,kk])=>{
+    if(pct>=m && !milestones.has("g"+m)){ milestones.add("g"+m); nuevosHitos.push(kk); }
+  });
+  // 3) insignias nuevas (toast)
+  const sb = { learned:learned.size, total:TOTAL, quiz:quizOK.size, quizEn:quizEN.size, streak:streak.count, catsDone:catsDone() };
+  BADGES.forEach(b=>{ if(!badges.has(b.id) && b.cond(sb)){ badges.add(b.id); toast("🏅 Insignia nueva: "+b.emoji+" "+b.nombre); } });
+  save();
+  // prioridad: 100% > categoría > hito menor
+  if(nuevosHitos.includes("m100")) celebrate("¡100% COMPLETADO!",pick(CEL.m100),"👑",true);
+  else if(nuevasCats.length) celebrate("¡Categoría completa!",pick(CEL.cat).replace("{cat}",nuevasCats[0].titulo),nuevasCats[0].emoji,false);
+  else if(nuevosHitos.length) celebrate("¡Hito alcanzado!",pick(CEL[nuevosHitos[nuevosHitos.length-1]]),"🎉",false);
+}
+
+/* ============================================================
+   BANNER MOTIVACIONAL
+   ============================================================ */
+let motiveIdx=-1;
+function nextMotive(){
+  const el=$("#motiv"); el.classList.add("out");
+  setTimeout(()=>{
+    let i; do{ i=Math.floor(Math.random()*MOTIVES.length); }while(i===motiveIdx);
+    motiveIdx=i; el.textContent=MOTIVES[i]; el.classList.remove("out");
+  },300);
+}
+setInterval(nextMotive,11000);
+
+/* ============================================================
+   EVENTOS (delegación)
+   ============================================================ */
+document.addEventListener("click",e=>{
+  const a = e.target.closest("a");
+  if(a) return; // links externos siguen su curso
+  const el = e.target.closest("[data-a]");
+  if(!el) return;
+  const act = el.dataset.a;
+
+  if(act==="enter"){ $("#splash").hidden=true; sessionStorage.setItem("amSplash","1"); fanfare(); }
+  if(act==="nav"){ state.view=el.dataset.v; state.cat=null; state.quiz=null; tick(); render(); window.scrollTo(0,0); }
+  if(act==="cat"){ state.view="cat"; state.cat=el.dataset.id; state.tab="aprender"; state.fcOrder=[]; state.fcIdx=0; state.fcFlip=false; tick(); render(); window.scrollTo(0,0); }
+  if(act==="back"){ state.view="home"; state.cat=null; tick(); render(); window.scrollTo(0,0); }
+  if(act==="tab"){ state.tab=el.dataset.t; state.fcFlip=false; tick(); render(); }
+
+  if(act==="learn"||act==="fc-learn"){
+    const k=el.dataset.k;
+    if(learned.has(k)){ learned.delete(k); tick(); }
+    else { learned.add(k); ding(); }
+    save(); checkAll();
+    if(act==="fc-learn" && learned.has(k)){ state.fcIdx=(state.fcIdx+1)%9999; state.fcFlip=false; }
+    render();
+  }
+  if(act==="flip"){ state.fcFlip=!state.fcFlip; tick(); render(); }
+  if(act==="fc-next"){ state.fcIdx++; state.fcFlip=false; tick(); render(); }
+  if(act==="fc-prev"){ state.fcIdx=Math.max(0,state.fcIdx-1); state.fcFlip=false; tick(); render(); }
+  if(act==="fc-shuffle"){ state.fcOrder=[]; state.fcIdx=0; state.fcFlip=false; tick(); render(); }
+
+  if(act==="speak"){ e.stopPropagation(); speak(el.dataset.t); return; }
+  if(act==="gi"){ el.classList.toggle("open"); tick(); }
+  if(act==="gcat"){ state.gcat=el.dataset.id; tick(); render(); }
+
+  if(act==="qmode"){ state.quizMode=el.dataset.m; state.quiz=null; tick(); render(); window.scrollTo(0,0); }
+  if(act==="opt"){
+    const q=state.quiz; if(!q||q.answered) return;
+    q.answered=true; q.picked=Number(el.dataset.i);
+    if(q.picked===q.correct){
+      if(q.en) quizEN.add(q.k); else { quizOK.add(q.k); learned.add(q.k); }
+      ding(); save(); checkAll();
+    } else buzz();
+    render();
+  }
+  if(act==="quiz-next"){ state.quiz=null; tick(); render(); window.scrollTo(0,0); }
+  if(act==="quiz-reset"){ if(state.quizMode==="ingles") quizEN.clear(); else quizOK.clear(); save(); state.quiz=null; toast("🔄 Reiniciado"); render(); }
+
+  if(act==="cele-ok"){ $("#cele").hidden=true; clearTimeout(celeTimer); tick(); }
+  if(act==="motive"){ nextMotive(); tick(); }
+  if(act==="dark"){ toggleDark(); }
+  if(act==="sound"){ toggleSound(); }
+  if(act==="install"){ doInstall(); }
+});
+
+document.addEventListener("input",e=>{
+  if(e.target.id==="gsearch"){ state.gq=e.target.value; $("#glist").innerHTML=glossList(); }
+});
+
+/* ============================================================
+   TEMA, SONIDO, INSTALACIÓN, SPLASH, SERVICE WORKER
+   ============================================================ */
+function applyDark(){ $("#btnDark").textContent=document.body.classList.contains("dark")?"☀️":"🌙"; }
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("amDark",document.body.classList.contains("dark")?"1":"0");
+  applyDark(); tick();
+}
+if(localStorage.getItem("amDark")==="0") document.body.classList.remove("dark");
+applyDark();
+
+function applySound(){ $("#btnSound").textContent=soundOn?"🔊":"🔇"; }
+function toggleSound(){ soundOn=!soundOn; localStorage.setItem("amSound",soundOn?"1":"0"); applySound(); if(soundOn) tick(); }
+applySound();
+
+/* instalar como app */
+let defPrompt=null;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); defPrompt=e; if(!standalone) $("#btnInstall").hidden=false; });
+if(isIOS && !standalone) $("#btnInstall").hidden=false;
+window.addEventListener("appinstalled",()=>{ $("#btnInstall").hidden=true; toast("✅ ¡App instalada!"); });
+function doInstall(){
+  if(defPrompt){ defPrompt.prompt(); defPrompt=null; }
+  else if(isIOS) toast("📲 En Safari: botón Compartir → «Añadir a pantalla de inicio»");
+  else toast("📲 En el menú del navegador busca «Instalar aplicación»");
+}
+
+/* splash: una vez por sesión */
+if(!sessionStorage.getItem("amSplash")) $("#splash").hidden=false;
+
+/* service worker (offline) */
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+/* ---------- arranque ---------- */
+motiveIdx=Math.floor(Math.random()*MOTIVES.length);
+$("#motiv").textContent=MOTIVES[motiveIdx];
+render();
+</script>
+</body>
+</html>
