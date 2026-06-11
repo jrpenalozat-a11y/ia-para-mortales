@@ -909,7 +909,25 @@ const DATA = { categorias: [
     simple:"Software cuyo código es público: cualquiera puede leerlo, usarlo y mejorarlo. Gran parte de internet funciona sobre código abierto.",
     analogia:"Recetas compartidas entre todos los chefs del mundo, que cada uno mejora: lo contrario de la receta secreta del local que no comparte ni el kétchup.",
     ejemplo:"Linux (mueve la mayoría de los servidores), Firefox, VLC, WordPress... y muchos modelos de IA siguen esa filosofía.",
-    paraQue:"Para entender el debate abierto vs cerrado en IA y por qué hay gente que programa gratis para el mundo (spoiler: funciona, y muy bien)." }
+    paraQue:"Para entender el debate abierto vs cerrado en IA y por qué hay gente que programa gratis para el mundo (spoiler: funciona, y muy bien)." },
+  { termino:"Repositorio (GitHub)",
+    simple:"Un repositorio es la carpeta de tu proyecto guardada en internet, con TODO su historial de cambios. GitHub es el lugar más popular donde viven estos repositorios.",
+    analogia:"Es como un Google Drive para programadores, pero con superpoderes: guarda cada versión, quién cambió qué y te deja volver atrás en el tiempo si la embarras.",
+    ejemplo:"Casi todo el software del mundo vive en GitHub, abierto o privado. Cuando alguien dice «súbelo a GitHub», te pide guardar tu proyecto en uno de estos repositorios.",
+    paraQue:"Es el paso previo a publicar cualquier app o web. Y es el portafolio de los programadores: muchos consiguen pega mostrando sus repos.",
+    link:"https://docs.github.com/es/get-started" },
+  { termino:"Commit y Push",
+    simple:"Commit es guardar una «foto» de tu proyecto con una notita de qué cambiaste. Push es subir esas fotos a internet (a tu repositorio en GitHub).",
+    analogia:"Commit es sacarle una foto a tu avance y ponerle título («arreglé el botón»). Push es subir el álbum a la nube para que no se pierda y otros lo vean.",
+    ejemplo:"Un programador hace varios commits al día y, cuando quiere respaldar o compartir, hace push. Si algo se rompe, vuelve a un commit anterior en segundos.",
+    paraQue:"Es la rutina diaria de quien programa: guardar (commit) y subir (push). Te explica cómo el código viaja de un computador a internet.",
+    link:"https://docs.github.com/es/get-started/using-git/about-git" },
+  { termino:"Deploy (publicar)",
+    simple:"Hacer «deploy» es publicar tu app o web en internet para que cualquiera la use. Es el momento en que tu proyecto pasa de tu computador al mundo.",
+    analogia:"Es como abrir tu local al público: estuviste cocinando en tu cocina (tu PC), y el deploy es subir la cortina y poner el cartel de «abierto».",
+    ejemplo:"Plataformas como Vercel o Netlify hacen el deploy casi solas: conectas tu GitHub y, con cada cambio que subes, publican la nueva versión en segundos. (Así están publicadas estas academias.)",
+    paraQue:"Es el paso final del «tengo una idea» → «está en internet». Te quita el misterio de cómo una app llega a estar disponible para todos.",
+    link:"https://vercel.com/docs/getting-started-with-vercel" }
 ]},
 
 /* ========== 8 · ÁREAS DE USO Y ALCANCE ========== */
@@ -1313,6 +1331,9 @@ const EN = {
   "Base de datos":      { en:"Database", pron:"DÉI-ta-beis", notas:"«Data» = datos; «base» = base. El archivo gigante y ordenado donde las apps guardan todo." },
   "Frontend y backend": { en:"Front-end / Back-end", pron:"frónt-end / bák-end", es:"la cara visible y la trastienda", notas:"Front-end = lo que ves (la «cara», el salón); back-end = lo que no ves (la cocina). Se usan tal cual en español." },
   "Open source (código abierto)":{ en:"Open source", pron:"ÓU-pen sors", es:"código abierto", notas:"Literal: «fuente abierta». Software cuyo código es público y cualquiera puede ver y mejorar." },
+  "Repositorio (GitHub)":{ en:"Repository (GitHub)", pron:"ri-PÓ-si-to-ri (git-JAB)", es:"repositorio", notas:"«Repo» para los amigos. Es tu proyecto + su historial completo, guardado en la nube." },
+  "Commit y Push":{ en:"Commit & Push", pron:"co-MÍT and push", es:"guardar y subir", notas:"Commit = guardar una versión; push = subirla a la nube. Se usan tal cual en español." },
+  "Deploy (publicar)":{ en:"Deploy", pron:"di-PLÓI", es:"desplegar / publicar", notas:"«Hacer deploy» = publicar la app en internet. También «desplegar» o «subir a producción»." },
   // 💬 Frases y prompts (técnica con término real de la industria)
   "Dale un rol":        { en:"Role prompting", pron:"róul PRÓMP-ting", es:"asignar un rol", notas:"«Role» = rol/papel. La técnica de decirle a la IA «actúa como...»." },
   "Itera (conversa)":   { en:"Iterate", pron:"Í-te-reit", es:"iterar", notas:"«Iterate» = iterar: repetir mejorando cada vuelta. Conversa con la IA puliendo su respuesta." },
