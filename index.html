@@ -91,11 +91,12 @@ button:active{transform:scale(.97)}
 .motiv.out{opacity:0}
 
 /* ---------- pestañas de navegación ---------- */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 18px}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0 18px}
 .tabs button{
-  padding:10px 4px;border-radius:14px;background:var(--card);border:1px solid var(--line);
-  font-size:.78rem;font-weight:600;color:var(--muted);box-shadow:var(--shadow2);transition:all .2s;
+  padding:9px 2px;border-radius:13px;background:var(--card);border:1px solid var(--line);
+  font-size:.72rem;line-height:1.15;font-weight:600;color:var(--muted);box-shadow:var(--shadow2);transition:all .2s;
 }
+@media(max-width:430px){.tabs{gap:5px}.tabs button{font-size:.66rem;padding:8px 1px}}
 .tabs button.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(124,92,255,.35)}
 
 /* ---------- vistas / animación de entrada ---------- */
@@ -349,6 +350,27 @@ button:active{transform:scale(.97)}
   font-size:.76rem;line-height:1.45;margin:-4px 0 12px;padding:8px 11px;border-radius:11px;
   background:color-mix(in srgb,var(--warn) 16%,transparent);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);
 }
+
+/* ---------- 💻 banco de palabras (sección Código) ---------- */
+.wlead{font-size:.85rem;line-height:1.5;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow2)}
+.wlead b{color:var(--ink)}
+.wprog{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:12px;box-shadow:var(--shadow2)}
+.wprog-lab{display:flex;justify-content:space-between;font-size:.76rem;font-weight:700;margin-bottom:6px}
+.wprog-lab span:last-child{color:var(--muted)}
+.wcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow2);transition:border-color .2s}
+.wcard.done{border-color:color-mix(in srgb,var(--good) 50%,var(--line))}
+.wtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wen{font-family:'Sora';font-weight:700;font-size:1.02rem;color:var(--ink)}
+.wsay{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;cursor:pointer;background:var(--p2);color:#fff;font-size:.85rem;flex:none;box-shadow:var(--shadow2);transition:transform .15s,filter .15s}
+.wsay:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.wsay:active{transform:scale(.92)}
+.wpron{font-size:.8rem;color:var(--muted);font-style:italic}
+.wtag{font-size:.6rem;font-weight:700;padding:3px 9px;border-radius:99px;color:#fff;margin-left:auto;white-space:nowrap}
+.wes{font-size:.86rem;margin-top:8px}
+.wes b{color:var(--p2)}
+.wdef{font-size:.84rem;color:var(--muted);line-height:1.5;margin-top:5px}
+.wlearn{width:100%;margin-top:10px;padding:10px;border-radius:12px;font-weight:700;font-size:.84rem;border:2px solid var(--p2);color:var(--p2);background:transparent;transition:all .2s}
+.wlearn.on{background:var(--good);border-color:var(--good);color:#fff}
 </style>
 </head>
 <body class="dark">
@@ -389,6 +411,7 @@ button:active{transform:scale(.97)}
   <nav class="tabs" id="nav">
     <button data-a="nav" data-v="home">🏠 Inicio</button>
     <button data-a="nav" data-v="gloss">📚 Glosario</button>
+    <button data-a="nav" data-v="words">🗣️ Habla Tech</button>
     <button data-a="nav" data-v="quiz">🧠 Evaluación</button>
     <button data-a="nav" data-v="progress">📊 Avance</button>
   </nav>
@@ -1340,6 +1363,75 @@ const EN = {
   "Muestra ejemplos":   { en:"Few-shot prompting", pron:"fiú-shot PRÓMP-ting", es:"darle pocos ejemplos", notas:"«Few-shot» = «con pocos intentos»: darle a la IA ejemplos de lo que quieres. Sin ejemplos se llama «zero-shot»." },
   "Verifica siempre":   { en:"Fact-checking", pron:"fakt-CHÉK-ing", es:"verificación de datos", notas:"«Fact» = hecho/dato; «check» = chequear. Confirmar que lo que dice la IA es cierto." }
 };
+
+/* ============================================================
+   💻 CÓDIGO — banco de 50 palabras (inglés técnico) con audio.
+   Grupos: ia · prog · deploy. Cada una: { g, en, pron, es, que }
+   Independiente de DATA.categorias (no afecta el conteo de conceptos).
+   ============================================================ */
+const WGROUPS = [
+  { id:"ia",     label:"🤖 IA",        color:"#00c2ff" },
+  { id:"prog",   label:"⌨️ Programar",  color:"#7c5cff" },
+  { id:"deploy", label:"🚀 Subir",      color:"#ff4d8d" }
+];
+const WORDS = [
+  // 🤖 IA
+  { g:"ia", en:"prompt", pron:"promt", es:"la instrucción", que:"Todo lo que le escribes o pides a la IA. Mientras más claro el pedido, mejor el resultado: es como pedir bien en un restaurante." },
+  { g:"ia", en:"token", pron:"TÓU-ken", es:"ficha / trozo", que:"El pedacito en que la IA corta el texto para procesarlo. No lee palabras enteras: las parte en fichas. Por eso los servicios cobran «por token»." },
+  { g:"ia", en:"model", pron:"MÁ-del", es:"modelo", que:"El «cerebro» entrenado que responde. ChatGPT es la app; el modelo (GPT, Claude) es el motor que va adentro." },
+  { g:"ia", en:"data", pron:"DÉI-ta", es:"datos", que:"La materia prima de todo: textos, fotos, clics, audios. Sin datos no hay IA. Ojo: en inglés se dice «DÉI-ta», no «DÁ-ta»." },
+  { g:"ia", en:"dataset", pron:"DÉI-ta-set", es:"conjunto de datos", que:"El montón ordenado de ejemplos con que se entrena un modelo. Datos malos = IA mala; datos buenos = IA buena." },
+  { g:"ia", en:"training", pron:"TRÉI-ning", es:"entrenamiento", que:"El proceso (lento y carísimo) donde el modelo aprende mirando millones de ejemplos. Se hace una vez, no en cada respuesta." },
+  { g:"ia", en:"machine learning", pron:"ma-SHÍN LÉR-ning", es:"aprendizaje automático", que:"Programas que aprenden de ejemplos en vez de seguir reglas escritas a mano. Es el motor de casi toda la IA de hoy. Se abrevia «ML»." },
+  { g:"ia", en:"neural network", pron:"NIÚ-ral NÉT-uork", es:"red neuronal", que:"Una malla de «neuronas» matemáticas que se pasan señales. Inspirada (de lejitos) en el cerebro. Es la base del deep learning." },
+  { g:"ia", en:"embedding", pron:"em-BÉ-ding", es:"vector de significado", que:"Convertir palabras en números para que las ideas parecidas queden «cerca». El secreto de los buscadores que entienden lo que quisiste decir." },
+  { g:"ia", en:"fine-tuning", pron:"fáin-TIÚ-ning", es:"ajuste fino", que:"Tomar un modelo ya entrenado y darle clases extra para especializarlo. Como un chef que hace un curso intensivo de sushi." },
+  { g:"ia", en:"inference", pron:"ÍN-fe-rens", es:"inferencia", que:"El momento en que el modelo ya entrenado te responde. Cada respuesta es una inferencia: rápida y barata comparada con entrenarlo." },
+  { g:"ia", en:"hallucination", pron:"ja-lu-si-NÉI-shon", es:"alucinación", que:"Cuando la IA inventa datos con cara de experto: cifras, citas o leyes que no existen. Regla de oro: verifica antes de usar." },
+  { g:"ia", en:"agent", pron:"ÉI-yent", es:"agente", que:"Una IA que no solo conversa: actúa sola usando herramientas (busca, escribe, ejecuta) para cumplir un objetivo en varios pasos." },
+  // ⌨️ Programar / web
+  { g:"prog", en:"code", pron:"cóud", es:"código", que:"Las instrucciones que el computador ejecuta. Toda app, web o programa es, en el fondo, código." },
+  { g:"prog", en:"bug", pron:"bog", es:"error / bicho", que:"Una falla en el código. Literal significa «bicho»: viene de una polilla real atascada en un computador en 1947." },
+  { g:"prog", en:"debug", pron:"di-BÓG", es:"depurar / cazar errores", que:"Buscar y arreglar bugs. La mitad del trabajo de programar es esto: encontrar por qué algo no funciona." },
+  { g:"prog", en:"function", pron:"FÓNK-shon", es:"función", que:"Un bloque de código con nombre que hace una tarea y se reutiliza. Como un electrodoméstico: lo «enciendes» cuando lo necesitas." },
+  { g:"prog", en:"variable", pron:"VÉ-ria-bol", es:"variable", que:"Una cajita con nombre que guarda un dato (un número, un texto). Le pones cosas y las sacas cuando quieras." },
+  { g:"prog", en:"array", pron:"a-RÉI", es:"arreglo / lista", que:"Una lista ordenada de cosas dentro de una sola variable. Como una repisa con casilleros numerados: 0, 1, 2…" },
+  { g:"prog", en:"object", pron:"ÓB-yect", es:"objeto", que:"Un paquete de datos con etiquetas: nombre, edad, color… Como una ficha con campos. La forma más común de ordenar información." },
+  { g:"prog", en:"string", pron:"string", es:"texto / cadena", que:"Cualquier texto en el código: una palabra, una frase, un emoji. Va entre comillas. «Hola» es un string." },
+  { g:"prog", en:"boolean", pron:"BÚ-li-an", es:"verdadero o falso", que:"Un dato que solo puede ser sí o no, true o false. El interruptor del código: prendido o apagado, sin grises." },
+  { g:"prog", en:"loop", pron:"lup", es:"bucle / ciclo", que:"Repetir algo muchas veces sin escribirlo mil veces. «Para cada cliente de la lista, manda el correo». Lo oirás siempre como «loop»." },
+  { g:"prog", en:"if / else", pron:"if / els", es:"si / si no", que:"La decisión del código: SI pasa esto, haz aquello; si no, haz lo otro. Así el programa «elige»." },
+  { g:"prog", en:"render", pron:"RÉN-der", es:"dibujar en pantalla", que:"Tomar los datos y «pintarlos» como algo visible: botones, textos, tarjetas. Cuando una app «renderiza», está armando lo que ves." },
+  { g:"prog", en:"console", pron:"con-SÓUL", es:"consola", que:"La pantalla de texto donde el programador le habla al computador y ve mensajes. El «backstage» de toda app." },
+  { g:"prog", en:"log", pron:"log", es:"registro / imprimir", que:"Dejar un mensaje en la consola para ver qué está pasando. «console.log» es el primer truco de todos para cazar errores." },
+  { g:"prog", en:"cache", pron:"cash", es:"memoria temporal", que:"Una copia guardada a mano para no pedir lo mismo de nuevo y andar más rápido. Por eso a veces «recargas» y recién ves el cambio. Suena «cash»." },
+  { g:"prog", en:"import", pron:"im-PÓRT", es:"importar / traer", que:"Traer código de otro archivo o librería para usarlo aquí. «Importas» una herramienta en vez de fabricarla de nuevo." },
+  { g:"prog", en:"library", pron:"LÁI-bre-ri", es:"biblioteca / librería", que:"Código ya hecho por otros que tú reutilizas para no partir de cero. Como comprar la salsa lista en vez de hacerla." },
+  { g:"prog", en:"framework", pron:"FRÉIM-uork", es:"marco de trabajo", que:"Una estructura grande y armada que te da las bases para construir apps más rápido. La librería te presta una pieza; el framework, la casa entera." },
+  { g:"prog", en:"API", pron:"éi-pi-ái", es:"enchufe entre programas", que:"Un enchufe estándar para que dos programas se hablen. Tu app le «pregunta» a la API de la IA y recibe la respuesta." },
+  { g:"prog", en:"frontend", pron:"FRÓNT-end", es:"la cara visible", que:"Todo lo que el usuario ve y toca: botones, colores, textos. El «salón» de la app." },
+  { g:"prog", en:"backend", pron:"BÁK-end", es:"la trastienda", que:"Lo que no se ve: la lógica, los datos, los servidores. La «cocina» donde se prepara todo." },
+  { g:"prog", en:"HTML · CSS · JavaScript", pron:"éich-ti-em-él · si-es-és · YÁ-va-script", es:"el trío de la web", que:"Los tres idiomas de toda página: HTML es el esqueleto (qué hay), CSS la ropa (cómo se ve) y JavaScript el movimiento (qué hace)." },
+  // 🚀 Subir (git + Vercel)
+  { g:"deploy", en:"repository", pron:"ri-PÓ-si-to-ri", es:"repositorio", que:"Tu proyecto completo + todo su historial de cambios, guardado y versionado. «Repo» para los amigos. Suele vivir en GitHub." },
+  { g:"deploy", en:"commit", pron:"co-MÍT", es:"guardar versión", que:"Guardar una «foto» del proyecto en cierto momento, con un mensajito de qué cambiaste. Tu máquina del tiempo: puedes volver a cualquier commit." },
+  { g:"deploy", en:"push", pron:"push", es:"subir", que:"Mandar tus commits desde tu computador a la nube (GitHub). «Hacer push» = subir tus cambios para que queden respaldados y compartidos." },
+  { g:"deploy", en:"pull", pron:"pul", es:"bajar / traer", que:"Lo contrario de push: traer a tu computador los cambios que hay en la nube. Útil cuando trabajan varios en lo mismo." },
+  { g:"deploy", en:"branch", pron:"branch", es:"rama", que:"Una copia paralela del proyecto para probar algo sin romper lo que ya funciona. Si sale bien, la unes; si no, la botas." },
+  { g:"deploy", en:"merge", pron:"merch", es:"fusionar / unir", que:"Juntar dos ramas en una. Cuando tu experimento quedó bueno, haces «merge» y pasa a la versión principal." },
+  { g:"deploy", en:"clone", pron:"clóun", es:"clonar / copiar", que:"Bajar una copia completa de un repositorio a tu computador para trabajar en él. El primer paso para tocar un proyecto que está en GitHub." },
+  { g:"deploy", en:"deploy", pron:"di-PLÓI", es:"desplegar / publicar", que:"Publicar la app en internet para que el mundo la use. «Hacer deploy» = pasarla de tu computador a una dirección web real." },
+  { g:"deploy", en:"build", pron:"bild", es:"construir / compilar", que:"El paso donde se arma la versión final y optimizada, lista para publicar. Algunos proyectos lo necesitan; estas PWA, no." },
+  { g:"deploy", en:"hosting", pron:"JÓUS-ting", es:"alojamiento", que:"El servicio que guarda tu web en sus servidores y la sirve a quien la visite. Como arrendar la vitrina donde vive tu app (Vercel, Netlify)." },
+  { g:"deploy", en:"domain", pron:"do-MÉIN", es:"dominio", que:"La dirección que la gente escribe para llegar a tu web: miapp.com. El «nombre y apellido» de tu sitio en internet." },
+  { g:"deploy", en:"environment", pron:"en-VÁIR-on-ment", es:"entorno", que:"El «ambiente» donde corre la app: tu computador (local), pruebas o producción. Se abrevia «env», cada uno con su configuración." },
+  { g:"deploy", en:"production", pron:"pro-DÓK-shon", es:"producción (en vivo)", que:"La versión real que usan las personas, ya publicada. «Subir a producción» = ponerlo en serio, ya no es ensayo." },
+  { g:"deploy", en:"rollback", pron:"RÓUL-bak", es:"revertir / volver atrás", que:"Deshacer un cambio y volver a una versión anterior que sí funcionaba. El botón de pánico cuando algo se rompe en producción." },
+  { g:"deploy", en:"localhost", pron:"LÓU-cal-jost", es:"tu computador local", que:"La dirección de la app corriendo en TU propio computador, antes de publicarla. Solo tú la ves: es tu ensayo privado." }
+];
+const WTOTAL = WORDS.length;
+const wkey = w => w.en;   // clave de progreso = término inglés (único)
+
 const CATS = DATA.categorias;
 CATS.forEach(cat=>cat.conceptos.forEach(c=>{ const e=EN[c.termino]; if(e) Object.assign(c,e); }));
 // helpers de idioma (chip bilingüe + quiz "¿Cómo se dice?")
@@ -1364,10 +1456,11 @@ let quizOK     = loadSet("amQuiz");
 let quizEN     = loadSet("amQuizEN");
 let milestones = loadSet("amMilestones");
 let badges     = loadSet("amBadges");
+let wordsLearned = loadSet("amWords");   // 💻 palabras de la sección Código
 
-const state = { view:"home", cat:null, tab:"aprender", fcOrder:[], fcIdx:0, fcFlip:false, gq:"", gcat:"", quiz:null, quizMode:"conceptos" };
+const state = { view:"home", cat:null, tab:"aprender", fcOrder:[], fcIdx:0, fcFlip:false, gq:"", gcat:"", quiz:null, quizMode:"conceptos", wq:"", wg:"" };
 
-function save(){ saveSet("amLearned",learned); saveSet("amQuiz",quizOK); saveSet("amQuizEN",quizEN); saveSet("amMilestones",milestones); saveSet("amBadges",badges); }
+function save(){ saveSet("amLearned",learned); saveSet("amQuiz",quizOK); saveSet("amQuizEN",quizEN); saveSet("amMilestones",milestones); saveSet("amBadges",badges); saveSet("amWords",wordsLearned); }
 
 /* ---------- racha diaria ---------- */
 function hoy(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -1447,6 +1540,7 @@ function render(){
   if(state.view==="home")     app.innerHTML = vHome();
   if(state.view==="cat")      app.innerHTML = vCat();
   if(state.view==="gloss")    app.innerHTML = vGloss();
+  if(state.view==="words")    app.innerHTML = vWords();
   if(state.view==="quiz")     app.innerHTML = vQuiz();
   if(state.view==="progress") app.innerHTML = vProgress();
 }
@@ -1573,6 +1667,47 @@ function vGloss(){
   </div>`;
 }
 
+/* ---------- 💻 Código: banco de palabras (inglés técnico) con audio ---------- */
+function wordCard(w){
+  const on = wordsLearned.has(wkey(w));
+  const grp = WGROUPS.find(x=>x.id===w.g) || WGROUPS[0];
+  return `<div class="wcard ${on?"done":""}">
+    <div class="wtop">
+      <span class="wen">${esc(w.en)}</span>
+      <span class="wsay" data-a="speak" data-t="${esc(w.en)}" role="button" tabindex="0" title="Escuchar en inglés">🔊</span>
+      <span class="wpron">🗣️ "${esc(w.pron)}"</span>
+      <span class="wtag" style="background:${grp.color}">${esc(grp.label)}</span>
+    </div>
+    <div class="wes">🇪🇸 <b>${esc(w.es)}</b></div>
+    <div class="wdef">${esc(w.que)}</div>
+    <button class="wlearn ${on?"on":""}" data-a="wlearn" data-k="${esc(wkey(w))}">${on?"✅ ¡La sé!":"✓ La sé"}</button>
+  </div>`;
+}
+function wordsList(){
+  const q = state.wq.trim().toLowerCase();
+  let items = WORDS.slice();
+  if(state.wg) items = items.filter(w=>w.g===state.wg);
+  if(q) items = items.filter(w=>(w.en+" "+w.es+" "+w.que).toLowerCase().includes(q));
+  if(!items.length) return `<div class="empty">Nada por aquí… prueba con otra palabra 🔍</div>`;
+  return items.map(wordCard).join("");
+}
+function vWords(){
+  const learnedN = WORDS.filter(w=>wordsLearned.has(wkey(w))).length;
+  const pct = Math.round(learnedN/WTOTAL*100);
+  const counts = g => WORDS.filter(w=>w.g===g).length;
+  const chips = `<div class="gchips">
+    <button class="${state.wg===""?"on":""}" data-a="wgroup" data-id="">Todas (${WTOTAL})</button>
+    ${WGROUPS.map(g=>`<button class="${state.wg===g.id?"on":""}" data-a="wgroup" data-id="${g.id}">${esc(g.label)} (${counts(g.id)})</button>`).join("")}
+  </div>`;
+  return `<div class="view">
+    <div class="wlead">💻 <b>Inglés técnico</b> que vas a oír al programar y al subir tu app. Toca 🔊 para escuchar la palabra, lee su significado y márcala cuando la sepas.</div>
+    <div class="wprog"><div class="wprog-lab"><span>Palabras dominadas</span><span>${learnedN}/${WTOTAL}</span></div><div class="bar"><i style="width:${pct}%;background:${barColor(pct)}"></i></div></div>
+    <input class="search" id="wsearch" type="search" placeholder="🔍 Busca (commit, render, cache, token...)" value="${esc(state.wq)}">
+    ${chips}
+    <div id="wlist">${wordsList()}</div>
+  </div>`;
+}
+
 /* ---------- evaluación: quiz A/B/C/D ---------- */
 function newQuestion(){
   const pool=[];
@@ -1693,13 +1828,16 @@ function vProgress(){
   const pe=ENTOTAL?Math.round(quizEN.size/ENTOTAL*100):0;
   const enBar = `<div class="brow"><div class="lab"><span>🇬🇧 ¿Cómo se dice?</span><span>${quizEN.size}/${ENTOTAL}</span></div>
     <div class="bar"><i style="width:${pe}%;background:${barColor(pe)}"></i></div></div>`;
+  const wl=WORDS.filter(w=>wordsLearned.has(wkey(w))).length, pw=WTOTAL?Math.round(wl/WTOTAL*100):0;
+  const wordsBar = `<div class="brow"><div class="lab"><span>💻 Código (inglés técnico)</span><span>${wl}/${WTOTAL}</span></div>
+    <div class="bar"><i style="width:${pw}%;background:${barColor(pw)}"></i></div></div>`;
   const sb = { learned:learned.size, total:TOTAL, quiz:quizOK.size, quizEn:quizEN.size, streak:streak.count, catsDone:catsDone() };
   const bds = BADGES.map(b=>{
     const on = badges.has(b.id) || b.cond(sb);
     return `<div class="badge ${on?"unlock":"lock"}"><span class="be">${b.emoji}</span><b>${esc(b.nombre)}</b><small>${esc(b.desc)}</small></div>`;
   }).join("");
   return `<div class="view">${ring}
-    <div class="pcard"><h3>📊 Avance por categoría</h3>${bars}${quizBar}${enBar}</div>
+    <div class="pcard"><h3>📊 Avance por categoría</h3>${bars}${quizBar}${enBar}${wordsBar}</div>
     <div class="pcard"><h3>🏅 Insignias</h3><div class="badges">${bds}</div></div>
   </div>`;
 }
@@ -1799,6 +1937,20 @@ document.addEventListener("click",e=>{
   if(act==="gi"){ el.classList.toggle("open"); tick(); }
   if(act==="gcat"){ state.gcat=el.dataset.id; tick(); render(); }
 
+  if(act==="wgroup"){ state.wg=el.dataset.id; tick(); render(); }
+  if(act==="wlearn"){
+    const k=el.dataset.k;
+    if(wordsLearned.has(k)){ wordsLearned.delete(k); tick(); }
+    else {
+      wordsLearned.add(k); ding();
+      if(wordsLearned.size===WTOTAL && !milestones.has("wAll")){
+        milestones.add("wAll");
+        celebrate("¡50 palabras dominadas!","Ya manejas el inglés técnico de IA, programación y deploy. ¡Hablas como dev! 💻🚀","💻",true);
+      }
+    }
+    save(); render();
+  }
+
   if(act==="qmode"){ state.quizMode=el.dataset.m; state.quiz=null; tick(); render(); window.scrollTo(0,0); }
   if(act==="opt"){
     const q=state.quiz; if(!q||q.answered) return;
@@ -1821,6 +1973,7 @@ document.addEventListener("click",e=>{
 
 document.addEventListener("input",e=>{
   if(e.target.id==="gsearch"){ state.gq=e.target.value; $("#glist").innerHTML=glossList(); }
+  if(e.target.id==="wsearch"){ state.wq=e.target.value; $("#wlist").innerHTML=wordsList(); }
 });
 
 /* ============================================================
