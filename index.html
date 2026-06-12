@@ -201,6 +201,10 @@ button:active{transform:scale(.97)}
 .gitem .def{font-size:.82rem;color:var(--muted);margin-top:5px;line-height:1.45}
 .gitem .more{display:none;margin-top:8px}
 .gitem.open .more{display:block;animation:fadeUp .25s ease}
+.glearn{display:inline-block;margin-top:9px;padding:7px 13px;border-radius:11px;font-weight:700;font-size:.78rem;border:2px solid var(--good);color:var(--good);background:transparent;cursor:pointer;transition:all .2s}
+.glearn.on{background:var(--good);color:#fff}
+.glearn:hover{filter:brightness(1.06)}
+.glearn:active{transform:scale(.96)}
 
 /* ---------- evaluación (quiz) ---------- */
 .qmodes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
@@ -1648,6 +1652,7 @@ function glossList(){
     <div class="row"><h4>${esc(x.c.termino)}</h4><span class="gtag">${x.cat.emoji} ${esc(x.cat.titulo)}</span>${learned.has(x.k)?"✅":""}</div>
     <div class="def">${esc(x.c.simple)}</div>
     ${enChip(x.c)}
+    <span class="glearn ${learned.has(x.k)?"on":""}" data-a="gloss-learn" data-k="${x.k}" role="button" tabindex="0">${learned.has(x.k)?"✅ Entendido":"✓ Marcar entendido"}</span>
     <div class="more">
       <div class="block"><b>😄 Analogía</b><p>${esc(x.c.analogia)}</p></div>
       <div class="block"><b>🌍 Ejemplo</b><p>${esc(x.c.ejemplo)}</p></div>
@@ -1935,6 +1940,12 @@ document.addEventListener("click",e=>{
 
   if(act==="speak"){ e.stopPropagation(); speak(el.dataset.t); return; }
   if(act==="gi"){ el.classList.toggle("open"); tick(); }
+  if(act==="gloss-learn"){
+    e.stopPropagation();
+    const k=el.dataset.k;
+    if(learned.has(k)){ learned.delete(k); tick(); } else { learned.add(k); ding(); }
+    save(); checkAll(); render();
+  }
   if(act==="gcat"){ state.gcat=el.dataset.id; tick(); render(); }
 
   if(act==="wgroup"){ state.wg=el.dataset.id; tick(); render(); }
