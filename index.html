@@ -316,6 +316,24 @@ button:active{transform:scale(.97)}
 .foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:34px}
 .empty{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 10px}
 
+/* ---------- lectura en voz alta (accesibilidad / baja visión) ---------- */
+.readaloud{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;padding:11px 18px;border:0;border-radius:13px;
+  font-family:'Sora';font-size:.9rem;font-weight:700;color:#fff;cursor:pointer;
+  background:var(--cc,var(--p1));box-shadow:var(--shadow2)}
+.readaloud:hover{filter:brightness(1.08)}
+.readaloud:focus-visible{outline:3px solid var(--p2);outline-offset:3px}
+.reading{outline:3px solid var(--cc,var(--p1));outline-offset:4px;border-radius:12px;
+  background:color-mix(in srgb,var(--cc,var(--p1)) 14%,transparent);scroll-margin:90px}
+#readbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(110px);z-index:96;
+  display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-radius:18px;
+  background:var(--ink);color:var(--bg2);box-shadow:var(--shadow);opacity:0;transition:transform .3s,opacity .3s;max-width:94vw}
+#readbar.show{transform:translateX(-50%) translateY(0);opacity:1}
+#readStatus{font-size:.82rem;font-weight:700;white-space:nowrap}
+#readbar button{border:0;border-radius:12px;padding:9px 13px;font-size:.82rem;font-weight:700;cursor:pointer;
+  font-family:'Sora';background:var(--p1);color:#fff}
+#readbar button:hover{filter:brightness(1.1)}
+#readbar button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
 /* ---------- link "Saber más" y filtros del glosario ---------- */
 .linkbtn{
   display:inline-flex;align-items:center;gap:6px;margin:4px 0 2px;padding:9px 14px;border-radius:11px;
@@ -434,6 +452,14 @@ button:active{transform:scale(.97)}
     <p id="celeText"></p>
     <button data-a="cele-ok">¡Seguimos! →</button>
   </div>
+</div>
+
+<!-- Barra de control de la lectura en voz alta (accesibilidad) -->
+<div id="readbar" hidden role="region" aria-label="Lectura en voz alta">
+  <span id="readStatus">🔊 Leyendo</span>
+  <button id="readSpeed" data-a="read-speed" type="button" title="Velocidad de lectura">1×</button>
+  <button id="readToggle" data-a="read-toggle" type="button">⏸️ Pausa</button>
+  <button id="readStop" data-a="read-stop" type="button">⏹️ Detener</button>
 </div>
 
 <div id="toast"></div>
@@ -1519,6 +1545,169 @@ function speak(text){
   window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
 }
 
+/* ============================================================
+   LECTURA EN VOZ ALTA  (accesibilidad para baja visión)
+   ------------------------------------------------------------
+   Convierte la lección visible en un "audiolibro": extrae SOLO
+   el texto narrable (sin código, imágenes, URLs ni símbolos
+   sueltos), lo divide en frases y lo reproduce en español con
+   la Web Speech API, resaltando lo que se va leyendo.
+   ============================================================ */
+
+/* Unidades de lectura: cada selector es un "párrafo" natural.
+   No se solapan (un h3 no vive dentro de un .block, etc.), así
+   que no hay texto repetido. */
+const SEL_LECTURA = ".cathead h2,.cathead p,.concept h3,.block,.ennote,.intro,.empty,.def";
+
+/* "Ruido" que jamás debe oírse: sintaxis de código, íconos,
+   chips de inglés, botones y badges decorativos. */
+const RUIDO_LECTURA = "script,style,noscript,code,pre,img,svg,button,"
+  + ".enchip,.enspeak,.num,.ok,.done,.learnbtn,.linkbtn,.glearn,.glink,.back,.subtabs,.readaloud,.mini";
+
+/* Normaliza el texto para que el motor no deletree símbolos:
+   quita emojis, viñetas huérfanas (* - • …), separadores
+   técnicos (/ \ | < > etc.) y colapsa los espacios y saltos de
+   línea. Conserva . , ¿ ? ¡ ! que el navegador usa de forma
+   nativa para las pausas y la entonación. */
+function normalizarLectura(txt){
+  return String(txt)
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{2000}-\u{206F}\u{FE00}-\u{FE0F}\u{200D}]/gu," ") // emojis, banderas, flechas, símbolos
+    .replace(/(^|\s)[*•·▪►◆▶➤–—-]+(?=\s|$)/g," ") // viñetas/guiones sueltos al inicio de lista
+    .replace(/[|/\\<>`~^_=+]+/g," ")               // separadores técnicos huérfanos
+    .replace(/\s+/g," ")                            // colapsar dobles espacios y saltos
+    .trim();
+}
+
+/* Limpia UN elemento: trabaja sobre una copia en memoria
+   (cloneNode) para no tocar lo que se ve en pantalla, borra el
+   ruido y, en los enlaces, conserva solo el texto humano
+   descartando las URLs crudas (no debe deletrear direcciones). */
+function limpiarNodoLectura(nodo){
+  const clon = nodo.cloneNode(true);
+  clon.querySelectorAll(RUIDO_LECTURA).forEach(n=>n.remove());
+  clon.querySelectorAll("a").forEach(a=>{
+    const t=(a.textContent||"").trim();
+    if(/^(https?:\/\/|www\.)/i.test(t)) a.remove();                 // URL cruda → fuera
+    else a.replaceWith(document.createTextNode(" "+t+" "));         // texto del enlace → se conserva
+  });
+  // separar bloques adyacentes (ej. la etiqueta <b> del <p>) para no pegar palabras
+  clon.innerHTML = clon.innerHTML.replace(/></g,"> <");
+  return normalizarLectura(clon.textContent||"");
+}
+
+/* === Función pedida: obtenerTextoPuroParaLectura(idContenedor) ===
+   Devuelve un Array de strings, una frase/párrafo ya limpio por
+   elemento, listo para enviarse en secuencia a window.speechSynthesis.
+   Cada unidad se clona en memoria, así que el DOM real no se altera. */
+function obtenerTextoPuroParaLectura(idContenedor){
+  const cont = document.getElementById(idContenedor);
+  if(!cont) return [];
+  const salida = [];
+  cont.querySelectorAll(SEL_LECTURA).forEach(u=>{
+    const t = limpiarNodoLectura(u);
+    if(t) salida.push(t);
+  });
+  return salida;
+}
+
+/* ---------- controlador del reproductor ---------- */
+/* velocidades disponibles (rate de la Web Speech API) con su etiqueta */
+const VELS = [ {r:0.75,t:"🐢 0.75×"}, {r:1,t:"1×"}, {r:1.25,t:"1.25×"}, {r:1.5,t:"🐇 1.5×"} ];
+const lector = { cola:[], idx:0, activo:false, pausado:false, voz:null, el:null, vi:1, utter:null };
+/* recordar la velocidad elegida entre sesiones */
+lector.vi = Math.min(Math.max(parseInt(localStorage.getItem("amReadVel"),10)||1,0), VELS.length-1);
+
+function vozEspanol(){ if(!voices.length) loadVoices(); return voices.find(v=>/^es/i.test(v.lang)) || null; }
+
+/* cicla a la siguiente velocidad; si está leyendo, re-dice la frase
+   actual a la nueva velocidad (el rate no se puede cambiar en caliente) */
+function cambiarVelocidadLectura(){
+  lector.vi = (lector.vi+1) % VELS.length;
+  localStorage.setItem("amReadVel", lector.vi);
+  actualizarBarraLectura();
+  if(lector.activo && !lector.pausado){
+    if(lector.utter){ lector.utter.onend=null; lector.utter.onerror=null; } // que la cancelada no avance
+    window.speechSynthesis.cancel();
+    hablarSiguiente();
+  }
+}
+
+/* Igual que la función pedida, pero conserva el elemento VIVO de
+   cada frase para poder resaltarlo, y parte cada párrafo en frases
+   (algunos navegadores cortan la voz en textos largos ~15 s). */
+function construirColaLectura(){
+  const cola = [];
+  $("#app").querySelectorAll(SEL_LECTURA).forEach(el=>{
+    const texto = limpiarNodoLectura(el);
+    if(!texto) return;
+    (texto.match(/[^.!?…]+[.!?…]*/g) || [texto]).forEach(f=>{
+      const t=f.trim(); if(t) cola.push({el, text:t});
+    });
+  });
+  return cola;
+}
+
+function iniciarLectura(){
+  if(!("speechSynthesis" in window)){ toast("🔇 Tu navegador no permite la voz"); return; }
+  pararLectura(true);
+  lector.cola = construirColaLectura();
+  if(!lector.cola.length){ toast("🔇 No hay texto para leer aquí"); return; }
+  lector.voz = vozEspanol();
+  if(!lector.voz) toast("🗣️ Sin voz en español: instálala en tu dispositivo para una mejor lectura");
+  lector.idx=0; lector.activo=true; lector.pausado=false;
+  mostrarBarraLectura();
+  hablarSiguiente();
+}
+
+function hablarSiguiente(){
+  if(!lector.activo) return;
+  if(lector.idx >= lector.cola.length){ finLectura(); return; }
+  const item = lector.cola[lector.idx];
+  resaltar(item.el);
+  actualizarBarraLectura();
+  const u = new SpeechSynthesisUtterance(item.text);
+  if(lector.voz){ u.voice=lector.voz; u.lang=lector.voz.lang; } else u.lang="es-ES";
+  u.rate=VELS[lector.vi].r; u.pitch=1;
+  u.onend  =()=>{ if(lector.activo && !lector.pausado){ lector.idx++; hablarSiguiente(); } };
+  u.onerror=()=>{ if(lector.activo){ lector.idx++; hablarSiguiente(); } };
+  lector.utter=u;
+  window.speechSynthesis.speak(u);
+}
+
+function alternarPausaLectura(){
+  if(!lector.activo) return;
+  if(lector.pausado){ lector.pausado=false; window.speechSynthesis.resume(); }
+  else { lector.pausado=true; window.speechSynthesis.pause(); }
+  actualizarBarraLectura();
+}
+
+function pararLectura(silencioso){
+  lector.activo=false; lector.pausado=false;
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+  quitarResaltado();
+  if(!silencioso) ocultarBarraLectura();
+}
+
+function finLectura(){ lector.activo=false; quitarResaltado(); ocultarBarraLectura(); toast("✅ Lectura terminada"); }
+
+/* resaltar el bloque que se está leyendo y traerlo a la vista */
+function resaltar(el){
+  quitarResaltado(); lector.el=el;
+  if(el){ el.classList.add("reading"); try{ el.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} }
+}
+function quitarResaltado(){ if(lector.el){ lector.el.classList.remove("reading"); lector.el=null; } }
+
+/* barra flotante con estado + pausa/seguir + detener */
+function mostrarBarraLectura(){ const b=$("#readbar"); b.hidden=false; requestAnimationFrame(()=>b.classList.add("show")); actualizarBarraLectura(); }
+function ocultarBarraLectura(){ const b=$("#readbar"); if(!b) return; b.classList.remove("show"); setTimeout(()=>{ if(!lector.activo) b.hidden=true; },320); }
+function actualizarBarraLectura(){
+  const total=lector.cola.length, n=Math.min(lector.idx+1,total);
+  const st=$("#readStatus"), tg=$("#readToggle"), sp=$("#readSpeed");
+  if(st) st.textContent = lector.pausado ? `⏸️ En pausa · ${n}/${total}` : `🔊 Leyendo ${n}/${total}`;
+  if(tg) tg.textContent = lector.pausado ? "▶️ Seguir" : "⏸️ Pausa";
+  if(sp) sp.textContent = VELS[lector.vi].t;
+}
+
 /* ---------- chapita de inglés + pronunciación + audio ---------- */
 function enChip(c){
   if(!c.en) return "";
@@ -1589,6 +1778,7 @@ function vCat(){
       <button class="${state.tab==="aprender"?"on":""}" data-a="tab" data-t="aprender">📖 Aprender</button>
       <button class="${state.tab==="practicar"?"on":""}" data-a="tab" data-t="practicar">🔁 Practicar</button>
     </div>
+    ${state.tab==="aprender"?`<button class="readaloud" data-a="read-aloud" title="Escuchar la lección en voz alta">🔊 Leer en voz alta</button>`:""}
     ${inner}
   </div>`;
 }
@@ -1918,6 +2108,14 @@ document.addEventListener("click",e=>{
   const el = e.target.closest("[data-a]");
   if(!el) return;
   const act = el.dataset.a;
+
+  // cualquier acción que no sea control de lectura detiene la lectura en curso
+  if(lector.activo && !["read-toggle","read-stop","read-aloud","read-speed"].includes(act)) pararLectura();
+
+  if(act==="read-aloud"){ iniciarLectura(); return; }
+  if(act==="read-toggle"){ alternarPausaLectura(); return; }
+  if(act==="read-speed"){ cambiarVelocidadLectura(); return; }
+  if(act==="read-stop"){ pararLectura(); toast("⏹️ Lectura detenida"); return; }
 
   if(act==="enter"){ $("#splash").hidden=true; sessionStorage.setItem("amSplash","1"); fanfare(); }
   if(act==="nav"){ state.view=el.dataset.v; state.cat=null; state.quiz=null; tick(); render(); window.scrollTo(0,0); }
