@@ -170,6 +170,9 @@ button:active{transform:scale(.97)}
 }
 .concept h3{font-size:1.05rem;flex:1}
 .concept .ok{font-size:20px}
+.concept .cardread{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:1rem;background:color-mix(in srgb,var(--cc,var(--p1)) 14%,transparent);color:var(--cc,var(--p1));border:1px solid color-mix(in srgb,var(--cc,var(--p1)) 30%,var(--line));transition:filter .15s,transform .15s}
+.concept .cardread:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.concept .cardread:active{transform:scale(.92)}
 .block{padding:10px 12px;border-radius:13px;margin-bottom:8px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line)}
 .block b{display:block;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-weight:700}
 .block p{font-size:.88rem;line-height:1.5}
@@ -1725,9 +1728,10 @@ function segmentarUnidad(el){
   return (arreglarSiglas(texto).match(/[^.!?…]+[.!?…]*/g) || [texto])
     .map(f=>f.trim()).filter(Boolean).map(t=>({el, track, text:t, lang:"es"}));
 }
-function construirColaLectura(){
+function construirColaLectura(root){
+  root = root || $("#app");
   const cola = [];
-  $("#app").querySelectorAll(SEL_LECTURA).forEach(el=>{
+  root.querySelectorAll(SEL_LECTURA).forEach(el=>{
     const git = el.closest(".gitem");
     if(git && !git.classList.contains("open")) return; // glosario: solo lo expandido
     segmentarUnidad(el).forEach(s=>cola.push(s));
@@ -1735,11 +1739,9 @@ function construirColaLectura(){
   return cola;
 }
 
-function iniciarLectura(){
-  if(!("speechSynthesis" in window)){ toast("🔇 Tu navegador no permite la voz"); return; }
-  pararLectura(true);
-  lector.cola = construirColaLectura();
-  if(!lector.cola.length){ toast(state.view==="gloss" ? "👆 Abre uno o más términos del glosario para escucharlos" : "🔇 No hay texto para leer aquí"); return; }
+/* arranca la lectura con una cola ya construida (sección completa o una sola tarjeta) */
+function arrancarColaLectura(cola){
+  lector.cola = cola;
   lector.voz = vozEspanol();
   lector.vozEn = vozIngles();
   if(!lector.voz) toast("🗣️ Sin voz en español: instálala en tu dispositivo para una mejor lectura");
@@ -1748,6 +1750,23 @@ function iniciarLectura(){
   activarMediaSession();
   kaInicio(); wakeOn();
   hablarSiguiente();
+}
+
+function iniciarLectura(){
+  if(!("speechSynthesis" in window)){ toast("🔇 Tu navegador no permite la voz"); return; }
+  pararLectura(true);
+  const cola = construirColaLectura();
+  if(!cola.length){ toast(state.view==="gloss" ? "👆 Abre uno o más términos del glosario para escucharlos" : "🔇 No hay texto para leer aquí"); return; }
+  arrancarColaLectura(cola);
+}
+
+/* leer una sola tarjeta (la del botón 🔊 de cada concepto) */
+function leerUna(cardEl){
+  if(!("speechSynthesis" in window)){ toast("🔇 Tu navegador no permite la voz"); return; }
+  pararLectura(true);
+  const cola = construirColaLectura(cardEl);
+  if(!cola.length){ toast("🔇 No hay texto para leer aquí"); return; }
+  arrancarColaLectura(cola);
 }
 
 function hablarSiguiente(){
@@ -2036,7 +2055,7 @@ function vLearn(cat){
   return cat.conceptos.map((c,i)=>{
     const k=key(cat,i), on=learned.has(k);
     return `<article class="concept">
-      <header><span class="num">${i+1}</span><h3>${esc(c.termino)}</h3>${on?'<span class="ok">✅</span>':""}</header>
+      <header><span class="num">${i+1}</span><h3>${esc(c.termino)}</h3>${on?'<span class="ok">✅</span>':""}<button class="cardread" data-a="read-one" title="Leer esta tarjeta en voz alta" aria-label="Leer esta tarjeta en voz alta">🔊</button></header>
       ${enChip(c)}
       <div class="block"><b>🧩 ¿Qué es?</b><p>${esc(c.simple)}</p></div>
       <div class="block"><b>😄 Analogía</b><p>${esc(c.analogia)}</p></div>
@@ -2361,9 +2380,10 @@ document.addEventListener("click",e=>{
   const act = el.dataset.a;
 
   // cualquier acción que no sea control de lectura detiene la lectura en curso
-  if(lector.activo && !["read-toggle","read-stop","read-aloud","read-speed","read-prev","read-next"].includes(act)) pararLectura();
+  if(lector.activo && !["read-toggle","read-stop","read-aloud","read-one","read-speed","read-prev","read-next"].includes(act)) pararLectura();
 
   if(act==="read-aloud"){ iniciarLectura(); return; }
+  if(act==="read-one"){ e.stopPropagation(); const card=el.closest(".concept"); if(card) leerUna(card); return; }
   if(act==="read-toggle"){ alternarPausaLectura(); return; }
   if(act==="read-prev"){ anteriorTrack(); return; }
   if(act==="read-next"){ siguienteTrack(); return; }
