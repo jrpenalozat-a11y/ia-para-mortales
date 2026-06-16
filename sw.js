@@ -1,6 +1,6 @@
 /* Service worker — IA para Mortales
    Sube CACHE (am-v1 → am-v2…) al cambiar assets del núcleo. */
-const CACHE = "am-v20";
+const CACHE = "am-v21";
 const ASSETS = [
   "./",
   "./index.html",
